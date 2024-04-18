@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 
 class ForgotPasswordNewPasswordScreen extends StatefulWidget {
   const ForgotPasswordNewPasswordScreen({
@@ -188,7 +190,48 @@ class _ForgotPasswordNewPasswordScreenState
                             const Color(0xff1D2766),
                           ),
                         ),
-                        onPressed: () async {},
+                        onPressed: () async {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CustomDialog(
+                                context: context,
+                                iconColor: AppColors.secondary,
+                                icon: const Icon(
+                                  Icons.check,
+                                  size: 32,
+                                  color: Colors.white,
+                                ),
+                                content: const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      'Se ha cambiado tu contraseña',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 24,
+                                        color: AppColors.primary,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 36,
+                                    ),
+                                    Text(
+                                      '¡Gracias por elegir miBigbro!',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: AppColors.primary,
+                                      ),
+                                    )
+                                  ],
+                                ),
+                                extraActions: const [],
+                                hideActions: true,
+                              );
+                            },
+                          );
+                        },
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
@@ -196,8 +239,11 @@ class _ForgotPasswordNewPasswordScreenState
                           ),
                           child: const Center(
                             child: Text(
-                              "Ingresar",
-                              style: TextStyle(fontSize: 14.0),
+                              'Cambiar contraseña',
+                              style: TextStyle(
+                                fontSize: 14.0,
+                                color: Colors.white,
+                              ),
                             ),
                           ),
                         ),

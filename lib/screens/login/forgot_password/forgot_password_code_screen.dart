@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:mibigbro_ventas_mobile/screens/login/forgot_password/forgot_password_new_password_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 
 class ForgotPasswordCodeScreen extends StatefulWidget {
@@ -128,7 +129,15 @@ class _ForgotPasswordCodeScreenState extends State<ForgotPasswordCodeScreen> {
                           //handle validation or checks here if necessary
                         },
                         //runs when every textfield is filled
-                        onSubmit: (String verificationCode) {},
+                        onSubmit: (String verificationCode) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const ForgotPasswordNewPasswordScreen(),
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(
                         height: 80,

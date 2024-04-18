@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mibigbro_ventas_mobile/screens/personal_data/personal_data_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/spacing.dart';
 
@@ -297,7 +298,14 @@ class HomeScreen extends StatelessWidget {
                     const Color(0xffE82220),
                     const Color(0xffE11C24),
                   ],
-                  onTapped: () {},
+                  onTapped: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const PersonalDataFormScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
               const SizedBox(

@@ -47,6 +47,7 @@ class _MyAppState extends State<MyApp> {
         Locale('es', ''), // Spanish, no country code
       ],
       theme: ThemeData(
+        useMaterial3: false,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           backgroundColor: Color(0xff1A2461),
           unselectedIconTheme: IconThemeData(
@@ -64,7 +65,7 @@ class _MyAppState extends State<MyApp> {
         progressIndicatorTheme: const ProgressIndicatorThemeData(
           color: Color(0xffEC1C24),
         ),
-        primaryColor: const Color(0xff1A2461),
+        primaryColor: const Color(0xff1D2766),
         colorScheme: ColorScheme(
           secondary: const Color(0xffEC1C24),
           brightness: Brightness.light,
@@ -81,6 +82,9 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: const Color(0xffFCFCFC),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
+            textStyle: MaterialStateProperty.all<TextStyle>(
+              const TextStyle(color: Colors.white),
+            ),
             elevation: MaterialStateProperty.all<double>(0.0),
             backgroundColor: MaterialStateProperty.all<Color>(
               const Color(0xff1A2461),
@@ -90,6 +94,20 @@ class _MyAppState extends State<MyApp> {
                 borderRadius: BorderRadius.circular(12),
               ),
             ),
+          ),
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          border: const UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Color(0xff1D2766),
+            ),
+          ),
+          iconColor: const Color(0xff1D2766),
+          hintStyle: TextStyle(
+            color: Colors.black.withOpacity(0.6),
+          ),
+          labelStyle: TextStyle(
+            color: Colors.black.withOpacity(0.6),
           ),
         ),
       ),
