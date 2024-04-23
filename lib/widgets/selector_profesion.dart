@@ -1,27 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:mibigbro_ventas_mobile/data/models/extra/marca_model.dart';
+import 'package:mibigbro_ventas_mobile/data/models/extra/profesion_model.dart';
 
-class SelectorMarca extends StatefulWidget {
-  const SelectorMarca({
+class SelectorProfesion extends StatefulWidget {
+  const SelectorProfesion({
     super.key,
-    required this.marcas,
+    required this.profesiones,
     required this.onChanged,
     required this.ocupacionInicial,
   });
 
   final int? ocupacionInicial;
-  final List<MarcaModel>? marcas;
-  final Function(MarcaModel) onChanged;
+  final List<ProfesionModel>? profesiones;
+  final Function(ProfesionModel) onChanged;
 
   @override
-  _SelectorMarcaState createState() => _SelectorMarcaState();
+  _SelectorProfesionState createState() => _SelectorProfesionState();
 }
 
-class _SelectorMarcaState extends State<SelectorMarca> {
-  MarcaModel? marcaSeleccioneda;
+class _SelectorProfesionState extends State<SelectorProfesion> {
+  ProfesionModel? profesionSeleccioneda;
 
   @override
   void initState() {
+    if (widget.ocupacionInicial != 0) {
+      if (widget.profesiones!
+          .where((p) => p.idAlianza == widget.ocupacionInicial)
+          .isNotEmpty) {
+        profesionSeleccioneda = widget.profesiones!
+            .firstWhere((p) => p.idAlianza == widget.ocupacionInicial);
+      }
+    }
     super.initState();
   }
 
@@ -29,7 +37,7 @@ class _SelectorMarcaState extends State<SelectorMarca> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        ValueNotifier<String> buscadorMarcaNotifier = ValueNotifier('');
+        ValueNotifier<String> buscadorProfesionNotifier = ValueNotifier('');
 
         showDialog(
           context: context,
@@ -43,12 +51,20 @@ class _SelectorMarcaState extends State<SelectorMarca> {
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
                     ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     child: TextField(
                       onChanged: (value) {
-                        buscadorMarcaNotifier.value = value;
+                        buscadorProfesionNotifier.value = value;
                       },
-                      decoration:
-                          const InputDecoration(labelText: 'Buscar marca'),
+                      decoration: InputDecoration(
+                        labelText: 'Buscar profesión',
+                        labelStyle: TextStyle(
+                          fontSize: 15,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(
@@ -56,27 +72,28 @@ class _SelectorMarcaState extends State<SelectorMarca> {
                   ),
                   Expanded(
                       child: ValueListenableBuilder<String>(
-                    valueListenable: buscadorMarcaNotifier,
+                    valueListenable: buscadorProfesionNotifier,
                     builder: (context, value, child) {
                       return ListView.builder(
-                        itemCount: widget.marcas!.length,
+                        itemCount: widget.profesiones!.length,
                         itemBuilder: (context, index) {
-                          final marca = widget.marcas![index];
+                          final profesion = widget.profesiones![index];
 
-                          if (!marca.nombreMarca
+                          if (!profesion.nombreProfesion
                               .toLowerCase()
                               .contains(value.toLowerCase())) {
                             return Container();
                           }
 
                           return ListTile(
-                            title: Text(marca.nombreMarca),
+                            title:
+                                Text(profesion.nombreProfesion.toUpperCase()),
                             onTap: () {
                               Navigator.pop(context);
                               setState(() {
-                                marcaSeleccioneda = marca;
+                                profesionSeleccioneda = profesion;
                               });
-                              widget.onChanged(marca);
+                              widget.onChanged(profesion);
                             },
                           );
                         },
@@ -90,25 +107,19 @@ class _SelectorMarcaState extends State<SelectorMarca> {
         );
       },
       child: Container(
-        decoration: const BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: Colors.grey,
-              width: 1,
-            ),
-          ),
-        ),
         width: double.infinity,
         padding: const EdgeInsets.symmetric(
           vertical: 14,
         ),
+        decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.grey, width: 1))),
         child: Row(
           children: [
             Expanded(
               child: Text(
-                marcaSeleccioneda != null
-                    ? marcaSeleccioneda!.nombreMarca
-                    : 'Seleccione una marca',
+                profesionSeleccioneda != null
+                    ? profesionSeleccioneda!.nombreProfesion.toUpperCase()
+                    : 'Selecciona una profesión',
               ),
             ),
             const Icon(

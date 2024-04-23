@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mibigbro_ventas_mobile/data/modelo_auto.dart';
+import 'package:mibigbro_ventas_mobile/data/models/extra/modelo_model.dart';
 
 class SelectorModelo extends StatefulWidget {
   const SelectorModelo({
@@ -9,9 +9,9 @@ class SelectorModelo extends StatefulWidget {
     required this.modeloSeleccionado,
   });
 
-  final ModeloAuto? modeloSeleccionado;
-  final List<ModeloAuto>? modelos;
-  final Function(ModeloAuto) onChanged;
+  final ModeloModel? modeloSeleccionado;
+  final List<ModeloModel>? modelos;
+  final Function(ModeloModel) onChanged;
 
   @override
   _SelectorModeloState createState() => _SelectorModeloState();
@@ -56,14 +56,14 @@ class _SelectorModeloState extends State<SelectorModelo> {
                         itemBuilder: (context, index) {
                           final modelo = widget.modelos![index];
 
-                          if (!modelo.nombre
+                          if (!modelo.nombreModelo
                               .toLowerCase()
                               .contains(value.toLowerCase())) {
                             return Container();
                           }
 
                           return ListTile(
-                            title: Text(modelo.nombre),
+                            title: Text(modelo.nombreModelo),
                             onTap: () {
                               Navigator.pop(context);
                               widget.onChanged(modelo);
@@ -97,7 +97,7 @@ class _SelectorModeloState extends State<SelectorModelo> {
             Expanded(
               child: Text(
                 widget.modeloSeleccionado != null
-                    ? widget.modeloSeleccionado!.nombre
+                    ? widget.modeloSeleccionado!.nombreModelo
                     : 'Selecciona un modelo',
               ),
             ),

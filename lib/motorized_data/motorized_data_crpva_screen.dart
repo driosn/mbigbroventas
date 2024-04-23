@@ -3,14 +3,38 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_ruat_screen.dart.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 import 'package:mibigbro_ventas_mobile/widgets/selector_numero.dart';
 
+class CarUpdateData {
+  CarUpdateData({
+    required this.placa,
+    required this.color,
+    required this.asientosNro,
+    required this.cilindrada,
+  });
+
+  final String placa;
+  final String color;
+  final int asientosNro;
+  final String cilindrada;
+}
+
 class MotorizedDataCRPVAScreen extends StatefulWidget {
   const MotorizedDataCRPVAScreen({
     super.key,
+    required this.paqueteStock,
+    required this.personalDataController,
+    required this.carController,
   });
+
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
+  final CarController carController;
 
   static const TextStyle panelTitleStyle = TextStyle(
       color: Color(0xff1D2766),
@@ -296,13 +320,29 @@ class _MotorizedDataCRPVAScreenState extends State<MotorizedDataCRPVAScreen> {
                   children: [
                     ElevatedButton(
                       onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) =>
-                                const MotorizedPhotoRuatScreen(),
-                          ),
-                        );
+                        if (!_formKeyDetalleMotorizado.currentState!
+                            .validate()) {
+                          // TODO: Manejar excepciones
+                        } else {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => MotorizedPhotoRuatScreen(
+                                carUpdateData: CarUpdateData(
+                                  placa: _placaPrimeraParteController.text +
+                                      _placaSegundaParteController.text,
+                                  color: _colorController.text,
+                                  asientosNro: numeroAsientos,
+                                  cilindrada: _cilindradaController.text,
+                                ),
+                                carController: widget.carController,
+                                personalDataController:
+                                    widget.personalDataController,
+                                paqueteStock: widget.paqueteStock,
+                              ),
+                            ),
+                          );
+                        }
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(

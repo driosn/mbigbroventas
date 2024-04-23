@@ -1,5 +1,8 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_info_dialog.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_data_crpva_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
@@ -8,7 +11,19 @@ import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 class PlanConfirmationScreen extends StatefulWidget {
   final bool esRenovacion;
 
-  const PlanConfirmationScreen({super.key, this.esRenovacion = false});
+  final DateTime fechaFin;
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
+  final CarController carController;
+
+  const PlanConfirmationScreen({
+    super.key,
+    this.esRenovacion = false,
+    required this.fechaFin,
+    required this.paqueteStock,
+    required this.personalDataController,
+    required this.carController,
+  });
 
   @override
   PlanConfirmationScreenState createState() {
@@ -309,7 +324,7 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
                                       maxLines: 1,
                                     ),
                                     AutoSizeText(
-                                      '${valueCotizacion!} Bs',
+                                      '${widget.paqueteStock.primebs} Bs',
                                       style: TextStyle(
                                         color: Theme.of(context).primaryColor,
                                         fontSize: 25.0,
@@ -339,7 +354,7 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
                                 child: Center(
                                   child: Text(
                                     // "Por ${widget.datosMotorizado!.diasPaquete.toString()} Días",
-                                    "Por 0 Días",
+                                    "Por ${widget.paqueteStock.duration} Días",
                                     style: TextStyle(
                                       fontSize: 12,
                                       color: Theme.of(context).primaryColor,
@@ -363,8 +378,12 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (_) =>
-                                      const MotorizedDataCRPVAScreen(),
+                                  builder: (_) => MotorizedDataCRPVAScreen(
+                                    carController: widget.carController,
+                                    paqueteStock: widget.paqueteStock,
+                                    personalDataController:
+                                        widget.personalDataController,
+                                  ),
                                 ),
                               );
                             },

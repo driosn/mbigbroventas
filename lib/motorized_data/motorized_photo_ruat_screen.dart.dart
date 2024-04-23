@@ -2,8 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
+import 'package:mibigbro_ventas_mobile/motorized_data/motorized_data_crpva_screen.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_front_back_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
@@ -11,7 +16,16 @@ import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 class MotorizedPhotoRuatScreen extends StatefulWidget {
   const MotorizedPhotoRuatScreen({
     super.key,
+    required this.carUpdateData,
+    required this.carController,
+    required this.paqueteStock,
+    required this.personalDataController,
   });
+
+  final CarUpdateData carUpdateData;
+  final CarController carController;
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
 
   @override
   _MotorizedPhotoRuatScreenState createState() =>
@@ -117,13 +131,36 @@ class _MotorizedPhotoRuatScreenState extends State<MotorizedPhotoRuatScreen> {
                         ),
                       ),
                       onPressed: () async {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                const MotorizedPhotoFrontBackScreen(),
-                          ),
-                        );
+                        if (imageRuat == null) {
+                          Fluttertoast.showToast(
+                              msg: 'Debe subir la foto del ruat');
+                        } else {
+                          final updateResponse =
+                              await widget.carController.updateCarWithRuat(
+                            ruatPhoto: imageRuat!,
+                            userId: widget.personalDataController.userId,
+                            placa: widget.carUpdateData.placa,
+                            color: widget.carUpdateData.color,
+                            asientosNro: widget.carUpdateData.asientosNro,
+                            cilindrada: widget.carUpdateData.cilindrada,
+                          );
+
+                          if (updateResponse != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => MotorizedPhotoFrontBackScreen(
+                                  carController: widget.carController,
+                                  paqueteStock: widget.paqueteStock,
+                                  personalDataController:
+                                      widget.personalDataController,
+                                ),
+                              ),
+                            );
+                          } else {
+                            // TODO: Manejar Excepciones
+                          }
+                        }
                       },
                     ),
                   ),

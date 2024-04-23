@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:mibigbro_ventas_mobile/data/modelo_auto.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
+import 'package:mibigbro_ventas_mobile/data/models/extra/modelo_model.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_info_dialog.dart';
 import 'package:mibigbro_ventas_mobile/screens/plans/plans_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
@@ -8,7 +11,12 @@ import 'package:mibigbro_ventas_mobile/widgets/selector_modelo.dart';
 
 // Create a Form widget.
 class CarDataScreen extends StatefulWidget {
-  const CarDataScreen({super.key});
+  const CarDataScreen({
+    super.key,
+    required this.personalDataController,
+  });
+
+  final PersonalDataController personalDataController;
 
   @override
   CarDataScreenState createState() {
@@ -22,24 +30,33 @@ class CarDataScreenState extends State<CarDataScreen> {
   // and allows validation of the form.
   final _formKeyDatosMotorizado = GlobalKey<FormState>();
   final TextEditingController _valor = TextEditingController();
-  final int _selectedMarca = 0;
-  final ValueNotifier<ModeloAuto?> _selectedModeloNotifier =
-      ValueNotifier<ModeloAuto?>(null);
+  int _selectedMarca = 0;
+  final ValueNotifier<ModeloModel?> _selectedModeloNotifier =
+      ValueNotifier<ModeloModel?>(null);
   final TextEditingController _otroModelo = TextEditingController();
-  int? _selectedAno = 0;
-  int? _selectedPlaza = 0;
-  int? _selectedUso = 0;
+  int _selectedAno = 0;
+  int _selectedPlaza = 0;
+  int _selectedUso = 0;
   bool otroModeloVisible = false;
+
+  //
+  // Datos Auto
+  //
+  String nombreMarca = '';
+  String nombreModelo = '';
+  String nombreUso = '';
+  String nombreCiudad = '';
 
   final titleStyle = const TextStyle(fontSize: 15, color: Color(0xff1A2461));
 
   final dropdownItemTextStyle =
       const TextStyle(fontSize: 15, color: Colors.black);
 
-  var modeloList = <ModeloAuto>[];
+  final _carController = CarController();
 
   @override
   void initState() {
+    _carController.getExtraData();
     super.initState();
   }
 
@@ -77,24 +94,33 @@ class CarDataScreenState extends State<CarDataScreen> {
     return BigBroScaffold(
       title: 'Datos del Motorizado',
       subtitle: 'Ingrese los datos de tu motorizado',
-      body: Form(
-        key: _formKeyDatosMotorizado,
-        child: SingleChildScrollView(
-          child: Center(
-            child: Padding(
-                padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    const SizedBox(height: 4),
-                    FutureBuilder(
-                      future: Future.delayed(Duration.zero),
-                      builder: (context, snapshotMarcas) {
-                        if (snapshotMarcas.hasData) {
-                          final marcas = snapshotMarcas.data;
+      body: ListenableBuilder(
+          listenable: _carController,
+          builder: (context, child) {
+            if (_carController.getExtraDataStatus == BigBroStatus.loading) {
+              const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
 
-                          return Column(
+            if (_carController.getExtraDataStatus == BigBroStatus.failure) {
+              const Center(
+                child: Text('Hubo un problema al cargar las marcas'),
+              );
+            }
+
+            return Form(
+              key: _formKeyDatosMotorizado,
+              child: SingleChildScrollView(
+                child: Center(
+                  child: Padding(
+                      padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const SizedBox(height: 4),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const Text(
@@ -106,74 +132,96 @@ class CarDataScreenState extends State<CarDataScreen> {
                               ),
                               SelectorMarca(
                                 ocupacionInicial: _selectedMarca,
-                                marcas: const [],
-                                onChanged: (marca) async {},
+                                marcas: _carController.marcas,
+                                onChanged: (marca) async {
+                                  nombreMarca = marca.nombreMarca;
+                                  _selectedMarca = marca.id;
+                                  _carController.getModelos(marca.id);
+                                },
                               ),
                             ],
-                          );
-                        }
-                        return Container();
-                      },
-                    ),
-                    const SizedBox(
-                      height: 8,
-                    ),
-                    ValueListenableBuilder<ModeloAuto?>(
-                      valueListenable: _selectedModeloNotifier,
-                      builder: (BuildContext context, ModeloAuto? modeloAuto,
-                          Widget? child) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Modelo',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            SelectorModelo(
-                              modeloSeleccionado: modeloAuto,
-                              modelos: modeloList,
-                              onChanged: (marca) async {
-                                setState(() {
-                                  _selectedModeloNotifier.value = marca;
-                                  if (marca.nombre == "Otro") {
-                                    otroModeloVisible = true;
-                                  } else {
-                                    otroModeloVisible = false;
-                                  }
-                                });
-                              },
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                    Visibility(
-                      visible: otroModeloVisible,
-                      child: TextFormField(
-                          controller: _otroModelo,
-                          decoration: const InputDecoration(
-                              labelText: 'Otro modelo',
-                              enabledBorder: UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: Color(0xff1D2766),
-                                ),
-                              )),
-                          validator: (String? value) {
-                            if (value!.isEmpty & otroModeloVisible) {
-                              return 'Ingrese el modelo';
-                            }
-                            return null;
-                          }),
-                    ),
-                    FutureBuilder<List<Anio>>(
-                        future: Future.value([]),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) return Container();
+                          ),
+                          const SizedBox(
+                            height: 8,
+                          ),
+                          ListenableBuilder(
+                            listenable: _carController,
+                            builder: (context, child) {
+                              if (_carController.modelosStatus ==
+                                  BigBroStatus.loading) {
+                                return const Text('Cargando Modelos');
+                              }
 
-                          return Column(
+                              if (_carController.modelosStatus ==
+                                  BigBroStatus.failure) {
+                                return const Text(
+                                  'Hubo un problema cargando los modelos, intente seleccionando la marca nuevamente',
+                                );
+                              }
+
+                              if (_carController.modelos.isEmpty) {
+                                return const Text(
+                                  'Para seleccionar un modelo, seleccione primero una marca',
+                                );
+                              }
+
+                              return ValueListenableBuilder<ModeloModel?>(
+                                valueListenable: _selectedModeloNotifier,
+                                builder: (BuildContext context,
+                                    ModeloModel? modeloAuto, Widget? child) {
+                                  return Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        'Modelo',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.black54,
+                                        ),
+                                      ),
+                                      SelectorModelo(
+                                        modeloSeleccionado: modeloAuto,
+                                        modelos: _carController.modelos,
+                                        onChanged: (modelo) async {
+                                          nombreModelo = modelo.nombreModelo;
+
+                                          setState(() {
+                                            _selectedModeloNotifier.value =
+                                                modelo;
+                                            if (modelo.nombreModelo == "Otro") {
+                                              otroModeloVisible = true;
+                                            } else {
+                                              otroModeloVisible = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          Visibility(
+                            visible: otroModeloVisible,
+                            child: TextFormField(
+                                controller: _otroModelo,
+                                decoration: const InputDecoration(
+                                    labelText: 'Otro modelo',
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Color(0xff1D2766),
+                                      ),
+                                    )),
+                                validator: (String? value) {
+                                  if (value!.isEmpty & otroModeloVisible) {
+                                    return 'Ingrese el modelo';
+                                  }
+                                  return null;
+                                }),
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
@@ -189,12 +237,14 @@ class CarDataScreenState extends State<CarDataScreen> {
                               DropdownButtonFormField(
                                 hint: const Text('Año del automóvil'),
                                 borderRadius: BorderRadius.circular(16),
-                                items: [].map((year) {
+                                items: _carController.years.map((year) {
                                   return DropdownMenuItem(
                                     value: year.id,
                                     child: Center(
                                       child: Text(
-                                        year.anio,
+                                        year.id == 0
+                                            ? 'Seleccione un año'
+                                            : '${year.year}',
                                         style: year.id == 0
                                             ? titleStyle
                                             : dropdownItemTextStyle,
@@ -203,11 +253,13 @@ class CarDataScreenState extends State<CarDataScreen> {
                                   );
                                 }).toList(),
                                 selectedItemBuilder: (context) {
-                                  return snapshot.data!.map((year) {
+                                  return _carController.years.map((year) {
                                     return DropdownMenuItem(
                                       value: year.id,
                                       child: Text(
-                                        year.anio,
+                                        year.id == 0
+                                            ? 'Seleccione un año'
+                                            : '${year.year}',
                                       ),
                                     );
                                   }).toList();
@@ -215,22 +267,16 @@ class CarDataScreenState extends State<CarDataScreen> {
                                 value: _selectedAno,
                                 validator: (dynamic value) =>
                                     value == 0 ? 'Elija un año' : null,
-                                onChanged: (dynamic value) {
+                                onChanged: (int? value) {
                                   setState(() {
-                                    _selectedAno = value;
+                                    _selectedAno = value!;
                                   });
                                 },
                                 isExpanded: true,
                               ),
                             ],
-                          );
-                        }),
-                    FutureBuilder<List<TipoUso>>(
-                        future: Future.value([]),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) return Container();
-
-                          return Column(
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
@@ -246,7 +292,7 @@ class CarDataScreenState extends State<CarDataScreen> {
                               DropdownButtonFormField(
                                 borderRadius: BorderRadius.circular(16),
                                 hint: const Text('Uso del automovil'),
-                                items: [].map((tipoUso) {
+                                items: _carController.usos.map((tipoUso) {
                                   return DropdownMenuItem(
                                     value: tipoUso.id,
                                     child: Center(
@@ -260,7 +306,7 @@ class CarDataScreenState extends State<CarDataScreen> {
                                   );
                                 }).toList(),
                                 selectedItemBuilder: (context) {
-                                  return snapshot.data!.map((tipoUso) {
+                                  return _carController.usos.map((tipoUso) {
                                     return DropdownMenuItem(
                                       value: tipoUso.id,
                                       child: Text(
@@ -273,6 +319,9 @@ class CarDataScreenState extends State<CarDataScreen> {
                                 validator: (dynamic value) =>
                                     value == 0 ? 'Elija un uso' : null,
                                 onChanged: (dynamic value) {
+                                  final uso = _carController.usos
+                                      .firstWhere((uso) => uso.id == value);
+                                  nombreUso = uso.nombreUso;
                                   setState(() {
                                     _selectedUso = value;
                                   });
@@ -280,14 +329,8 @@ class CarDataScreenState extends State<CarDataScreen> {
                                 isExpanded: true,
                               ),
                             ],
-                          );
-                        }),
-                    FutureBuilder<List<Ciudad>>(
-                        future: Future.value([]),
-                        builder: (context, snapshot) {
-                          if (!snapshot.hasData) return Container();
-
-                          return Column(
+                          ),
+                          Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(
@@ -303,7 +346,7 @@ class CarDataScreenState extends State<CarDataScreen> {
                               DropdownButtonFormField(
                                 borderRadius: BorderRadius.circular(16),
                                 hint: const Text('Plaza de circulación'),
-                                items: snapshot.data!.map((ciudad) {
+                                items: _carController.plazas.map((ciudad) {
                                   return DropdownMenuItem(
                                     value: ciudad.id,
                                     child: Center(
@@ -317,7 +360,7 @@ class CarDataScreenState extends State<CarDataScreen> {
                                   );
                                 }).toList(),
                                 selectedItemBuilder: (context) {
-                                  return snapshot.data!.map((ciudad) {
+                                  return _carController.plazas.map((ciudad) {
                                     return DropdownMenuItem(
                                       value: ciudad.id,
                                       child: Text(
@@ -330,6 +373,9 @@ class CarDataScreenState extends State<CarDataScreen> {
                                 validator: (dynamic value) =>
                                     value == 0 ? 'Elija una ciudad' : null,
                                 onChanged: (dynamic value) {
+                                  final plaza = _carController.plazas
+                                      .firstWhere((plaza) => plaza.id == value);
+                                  nombreCiudad = plaza.nombreCiudad;
                                   setState(() {
                                     _selectedPlaza = value;
                                   });
@@ -337,110 +383,143 @@ class CarDataScreenState extends State<CarDataScreen> {
                                 isExpanded: true,
                               ),
                             ],
-                          );
-                        }),
-                    const SizedBox(
-                      height: 4,
-                    ),
-                    const Text(
-                      'Valor asegurado (Dólares)',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    TextFormField(
-                      controller: _valor,
-                      maxLength: 9,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
-                      decoration: const InputDecoration(
-                          labelText: 'Valor asegurado (Dólares)',
-                          enabledBorder: UnderlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Color(0xff1D2766),
-                            ),
-                          )),
-                      validator: (String? value) {
-                        if (value!.isEmpty) {
-                          return 'Ingrese el valor asegurado (Dólares)';
-                        } else if (double.parse(value) < 5000) {
-                          return 'El valor debe ser mayor a 5.000 USD';
-                        } else if (double.parse(value) > 30000) {
-                          return 'El valor debe ser menor a 30.000 USD';
-                        }
-                        return null;
-                      },
-                    ),
-                    Row(
-                      children: [
-                        const Expanded(
-                            flex: 3,
-                            child: Text(
-                                "Incluye el valor por el que asegurarás tu auto, el cual no puede ser menor a 5.000 USD ni mayor a 30.000 USD",
-                                style: TextStyle(
-                                    color: Color(0xff1D2766), fontSize: 10))),
-                        Expanded(
-                            flex: 1,
-                            child: SizedBox(
-                                width: 30,
-                                child: RawMaterialButton(
-                                  onPressed: () {
-                                    CustomInfoDialog(
-                                      context: context,
-                                      iconColor: const Color(0xffEC1C24),
-                                      title: 'Valor a asegurar',
-                                      subtitle:
-                                          'El monto por el que se debe asegurar es el valor comercial de mercado, el cual es el valor que tiene el vehículo al momento de contratar el seguro, este valor es el que te indemniza la compañia de seguros ante perdida total por accidente o perdida total por robo',
-                                    );
-                                  },
-                                  elevation: 10.0,
-                                  fillColor: Colors.red,
-                                  padding: const EdgeInsets.all(2.0),
-                                  shape: const CircleBorder(),
-                                  child: const Icon(
-                                    Icons.info_outline,
-                                    size: 20.0,
-                                    color: Colors.white,
-                                  ),
-                                )))
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const PlansScreen(),
-                              ),
-                            );
-                          },
-                          child: const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 10,
-                              horizontal: 24,
-                            ),
-                            child: Text(
-                              "Siguiente",
-                              style: TextStyle(
-                                fontSize: 14.0,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.white,
-                              ),
+                          ),
+                          const SizedBox(
+                            height: 4,
+                          ),
+                          const Text(
+                            'Valor asegurado (Dólares)',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.black54,
                             ),
                           ),
-                        )
-                      ],
-                    ),
-                  ],
-                )),
-          ),
-        ),
-      ),
+                          TextFormField(
+                            controller: _valor,
+                            maxLength: 9,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: true),
+                            decoration: const InputDecoration(
+                                labelText: 'Valor asegurado (Dólares)',
+                                enabledBorder: UnderlineInputBorder(
+                                  borderSide: BorderSide(
+                                    color: Color(0xff1D2766),
+                                  ),
+                                )),
+                            validator: (String? value) {
+                              if (value!.isEmpty) {
+                                return 'Ingrese el valor asegurado (Dólares)';
+                              } else if (double.parse(value) < 5000) {
+                                return 'El valor debe ser mayor a 5.000 USD';
+                              } else if (double.parse(value) > 30000) {
+                                return 'El valor debe ser menor a 30.000 USD';
+                              }
+                              return null;
+                            },
+                          ),
+                          Row(
+                            children: [
+                              const Expanded(
+                                  flex: 3,
+                                  child: Text(
+                                      "Incluye el valor por el que asegurarás tu auto, el cual no puede ser menor a 5.000 USD ni mayor a 30.000 USD",
+                                      style: TextStyle(
+                                          color: Color(0xff1D2766),
+                                          fontSize: 10))),
+                              Expanded(
+                                  flex: 1,
+                                  child: SizedBox(
+                                      width: 30,
+                                      child: RawMaterialButton(
+                                        onPressed: () {
+                                          CustomInfoDialog(
+                                            context: context,
+                                            iconColor: const Color(0xffEC1C24),
+                                            title: 'Valor a asegurar',
+                                            subtitle:
+                                                'El monto por el que se debe asegurar es el valor comercial de mercado, el cual es el valor que tiene el vehículo al momento de contratar el seguro, este valor es el que te indemniza la compañia de seguros ante perdida total por accidente o perdida total por robo',
+                                          );
+                                        },
+                                        elevation: 10.0,
+                                        fillColor: Colors.red,
+                                        padding: const EdgeInsets.all(2.0),
+                                        shape: const CircleBorder(),
+                                        child: const Icon(
+                                          Icons.info_outline,
+                                          size: 20.0,
+                                          color: Colors.white,
+                                        ),
+                                      )))
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () async {
+                                  if (_formKeyDatosMotorizado.currentState!
+                                          .validate() &&
+                                      _selectedModeloNotifier.value != null &&
+                                      _selectedModeloNotifier.value?.id != 0) {
+                                    final carResponse =
+                                        await _carController.createCar(
+                                      issueValue: int.parse(_valor.text),
+                                      userId:
+                                          widget.personalDataController.userId,
+                                      uso: _selectedUso,
+                                      clase: 1,
+                                      ciudad: _selectedPlaza,
+                                      modelo: _selectedModeloNotifier.value!.id,
+                                      year: _selectedAno,
+                                    );
+
+                                    if (carResponse != null) {
+                                      _carController.updateNames(
+                                        nombreMarca: nombreMarca,
+                                        nombreModelo: nombreModelo,
+                                        nombreUso: nombreUso,
+                                        nombreCiudad: nombreCiudad,
+                                      );
+
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => PlansScreen(
+                                            carController: _carController,
+                                            personalDataController:
+                                                widget.personalDataController,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      // TODO: Manejar excepcion
+                                    }
+                                  }
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    vertical: 10,
+                                    horizontal: 24,
+                                  ),
+                                  child: Text(
+                                    "Siguiente",
+                                    style: TextStyle(
+                                      fontSize: 14.0,
+                                      fontWeight: FontWeight.normal,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        ],
+                      )),
+                ),
+              ),
+            );
+          }),
     );
   }
 }

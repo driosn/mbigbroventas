@@ -3,7 +3,12 @@ import 'dart:io';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/inspeccion_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/screens/signature/signature_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
@@ -12,7 +17,16 @@ import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 class MotorizedPhotoExtraScreen extends StatefulWidget {
   const MotorizedPhotoExtraScreen({
     super.key,
+    required this.paqueteStock,
+    required this.personalDataController,
+    required this.carController,
+    required this.inspectionController,
   });
+
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
+  final CarController carController;
+  final InspeccionController inspectionController;
 
   @override
   _MotorizedPhotoExtraScreenState createState() =>
@@ -288,12 +302,36 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
                           ),
                           onPressed: () async {
                             if (_pageController.page == 2.0) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const SignatureScreen(),
-                                ),
-                              );
+                              if (imageDamage != null && imageTablero != null) {
+                                final inspectionResponse =
+                                    await widget.inspectionController.update2(
+                                  damage: imageDamage!,
+                                  tablero: imageTablero!,
+                                  carId: widget.carController.carId,
+                                );
+
+                                if (inspectionResponse != null) {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => SignatureScreen(
+                                        carController: widget.carController,
+                                        inspectionController:
+                                            widget.inspectionController,
+                                        paqueteStock: widget.paqueteStock,
+                                        personalDataController:
+                                            widget.personalDataController,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  // TODO: Manejar Excepciones
+                                }
+                              } else {
+                                Fluttertoast.showToast(
+                                  msg: 'Debe subir las fotos adicionales',
+                                );
+                              }
                             } else {
                               _pageController.nextPage(
                                 duration: const Duration(milliseconds: 750),

@@ -2,10 +2,18 @@ import 'dart:io';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
 import 'package:mibigbro_ventas_mobile/screens/car_data/car_data_screen.dart';
 
 class PersonalDataCIScreen extends StatefulWidget {
-  const PersonalDataCIScreen({super.key});
+  const PersonalDataCIScreen({
+    super.key,
+    required this.personalDataController,
+  });
+
+  final PersonalDataController personalDataController;
 
   @override
   State<PersonalDataCIScreen> createState() {
@@ -37,6 +45,29 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
         currentPage = _pageController.page ?? 0.0;
       });
     });
+  }
+
+  Future getImage(String tipoFoto) async {
+    final picker = ImagePicker();
+    final pickedFile =
+        await picker.pickImage(source: ImageSource.camera, imageQuality: 20);
+    if (tipoFoto == "ciFrontal") {
+      setState(() {
+        if (pickedFile != null) {
+          _imageCiFrontal = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    } else {
+      setState(() {
+        if (pickedFile != null) {
+          _imageCiTrasera = File(pickedFile.path);
+        } else {
+          print('No image selected.');
+        }
+      });
+    }
   }
 
   @override
@@ -118,12 +149,16 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
                             _FotoFrontal(
                               imageCiFrontal: _imageCiFrontal,
                               ciFrontalCargado: ciFrontaCargado,
-                              onTap: () {},
+                              onTap: () {
+                                getImage('ciFrontal');
+                              },
                             ),
                             _FotoTrasera(
                               imageCiTrasera: _imageCiTrasera,
                               ciTraseraCargado: ciTraseraCargado,
-                              onTap: () {},
+                              onTap: () {
+                                getImage('ciTrasera');
+                              },
                             ),
                             _PreviewFotos(
                               imageCiFrontal: _imageCiFrontal,
@@ -177,12 +212,34 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
                               ),
                               onPressed: () async {
                                 if (_pageController.page == 2.0) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => const CarDataScreen(),
-                                    ),
-                                  );
+                                  if (_imageCiFrontal != null &&
+                                      _imageCiTrasera != null) {
+                                    final clientResponse = await widget
+                                        .personalDataController
+                                        .updateClientCI(
+                                      ciFrontal: _imageCiFrontal!,
+                                      ciTrasero: _imageCiTrasera!,
+                                    );
+
+                                    if (clientResponse != null) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (_) => CarDataScreen(
+                                            personalDataController:
+                                                widget.personalDataController,
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      // TODO: Actualizar excepciones
+                                    }
+                                  } else {
+                                    Fluttertoast.showToast(
+                                      msg:
+                                          'Imagen Frontal y Trasera son requeridas',
+                                    );
+                                  }
                                 } else {
                                   _pageController.nextPage(
                                     duration: const Duration(milliseconds: 750),

@@ -1,14 +1,30 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/inspeccion_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/screens/summary/summary_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:signature/signature.dart';
 
 class SignatureScreen extends StatefulWidget {
   const SignatureScreen({
     super.key,
+    required this.paqueteStock,
+    required this.personalDataController,
+    required this.carController,
+    required this.inspectionController,
   });
+
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
+  final CarController carController;
+  final InspeccionController inspectionController;
+
   @override
   _SignatureScreenState createState() => _SignatureScreenState();
 }
@@ -116,35 +132,62 @@ class _SignatureScreenState extends State<SignatureScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Expanded(
-                      flex: 1,
-                      child: ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              (_valueCheckTerminos!)
-                                  ? Theme.of(context).primaryColor
-                                  : Colors.grey),
-                        ),
-                        onPressed: () async {
-                          if (_valueCheckTerminos! == true) {
+                    flex: 1,
+                    child: ElevatedButton(
+                      style: ButtonStyle(
+                        backgroundColor: MaterialStateProperty.all<Color>(
+                            (_valueCheckTerminos!)
+                                ? Theme.of(context).primaryColor
+                                : Colors.grey),
+                      ),
+                      onPressed: () async {
+                        if (_valueCheckTerminos! == true) {
+                          final Uint8List dataFirma =
+                              await (_controller.toPngBytes()) as Uint8List;
+
+                          final tempDir = await getTemporaryDirectory();
+                          File file =
+                              await File('${tempDir.path}/image.png').create();
+                          file.writeAsBytesSync(dataFirma);
+
+                          final signatureResponse = await widget
+                              .personalDataController
+                              .updateClientSignature(
+                            signature: file,
+                          );
+
+                          if (signatureResponse == null) {
+                            // TODO: Manejar Excepcion
+                          } else {
+                            print(signatureResponse);
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => const SummaryScreen(),
+                                builder: (_) => SummaryScreen(
+                                  carController: widget.carController,
+                                  inspectionController:
+                                      widget.inspectionController,
+                                  paqueteStock: widget.paqueteStock,
+                                  personalDataController:
+                                      widget.personalDataController,
+                                ),
                               ),
                             );
                           }
-                        },
-                        child: _valueCheckTerminos!
-                            ? const Text(
-                                "Continuar",
-                                style: TextStyle(fontSize: 14.0),
-                              )
-                            : const Text(
-                                "Debe aceptar los términos y condiciones",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(fontSize: 14.0),
-                              ),
-                      ))
+                        }
+                      },
+                      child: _valueCheckTerminos!
+                          ? const Text(
+                              "Continuar",
+                              style: TextStyle(fontSize: 14.0),
+                            )
+                          : const Text(
+                              "Debe aceptar los términos y condiciones",
+                              textAlign: TextAlign.center,
+                              style: TextStyle(fontSize: 14.0),
+                            ),
+                    ),
+                  )
                 ],
               )
             ],

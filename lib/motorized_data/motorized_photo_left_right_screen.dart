@@ -3,7 +3,12 @@ import 'dart:io';
 
 import 'package:dots_indicator/dots_indicator.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mibigbro_ventas_mobile/controllers/car_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/inspeccion_controller.dart';
+import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_extra_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
@@ -12,7 +17,16 @@ import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 class MotorizedPhotoLeftRightScreen extends StatefulWidget {
   const MotorizedPhotoLeftRightScreen({
     super.key,
+    required this.paqueteStock,
+    required this.personalDataController,
+    required this.carController,
+    required this.inspectionController,
   });
+
+  final PaqueteStock paqueteStock;
+  final PersonalDataController personalDataController;
+  final CarController carController;
+  final InspeccionController inspectionController;
 
   @override
   _MotorizedPhotoLeftRightScreenState createState() =>
@@ -267,12 +281,37 @@ class _MotorizedPhotoLeftRightScreenState
                       ),
                       onPressed: () async {
                         if (_pageController.page == 2.0) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const MotorizedPhotoExtraScreen(),
-                            ),
-                          );
+                          if (imageLateralIzquierdo != null &&
+                              imageLateralDerecho != null) {
+                            final inspectionResponse =
+                                await widget.inspectionController.update1(
+                              lateralDer: imageLateralDerecho!,
+                              lateralIzq: imageLateralIzquierdo!,
+                              carId: widget.carController.carId,
+                            );
+
+                            if (inspectionResponse != null) {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MotorizedPhotoExtraScreen(
+                                    carController: widget.carController,
+                                    inspectionController:
+                                        widget.inspectionController,
+                                    paqueteStock: widget.paqueteStock,
+                                    personalDataController:
+                                        widget.personalDataController,
+                                  ),
+                                ),
+                              );
+                            } else {
+                              // TODO: Manejar Excepciones
+                            }
+                          } else {
+                            Fluttertoast.showToast(
+                              msg: 'Debe subir las fotos laterales',
+                            );
+                          }
                         } else {
                           _pageController.nextPage(
                             duration: const Duration(milliseconds: 750),
