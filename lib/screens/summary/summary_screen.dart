@@ -10,6 +10,7 @@ import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/show_qr_dialog.dart';
+import 'package:mibigbro_ventas_mobile/screens/home/home_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/extensions.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -601,7 +602,19 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                           amount: widget
                                                               .paqueteStock
                                                               .primebs,
-                                                          onFinish: () {},
+                                                          onFinish: () {
+                                                            Navigator.pop(
+                                                                context);
+                                                            Navigator
+                                                                .pushAndRemoveUntil(
+                                                              context,
+                                                              MaterialPageRoute(
+                                                                builder: (_) =>
+                                                                    HomeScreen(),
+                                                              ),
+                                                              (route) => false,
+                                                            );
+                                                          },
                                                         );
                                                         // Navigator.push(
                                                         // context,

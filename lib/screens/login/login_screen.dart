@@ -42,14 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
     final email = _email.text;
     final password = _pass.text;
 
-    // final successResponse = await _loginController.login(
-    // email: email,
-    // password: password,
-    // );
-
     final successResponse = await _loginController.login(
-      email: 'davidsamuelrios07@gmail.com',
-      password: 'Abrenet123*',
+      email: email,
+      password: password,
     );
 
     if (successResponse) {

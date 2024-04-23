@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:path_provider/path_provider.dart';
@@ -22,7 +23,9 @@ showQRDialog(
         hideActions: true,
         extraActions: [
           TextButton(
-            onPressed: onFinish,
+            onPressed: () {
+              onFinish();
+            },
             child: const Text('Finalizar'),
           )
         ],
@@ -107,6 +110,8 @@ showQRDialog(
                     await file.writeAsBytes(imageBytes);
                     await temporaryFile.writeAsBytes(imageBytes);
 
+                    Fluttertoast.showToast(msg: 'Imagen guardada en descargas');
+
                     final result =
                         await Share.shareXFiles([XFile(temporaryFile.path)]);
 
@@ -138,6 +143,8 @@ showQRDialog(
                     await file.writeAsBytes(imageBytes);
                     await temporaryFile.writeAsBytes(imageBytes);
 
+                    Fluttertoast.showToast(msg: 'Imagen guardada en descargas');
+
                     final result =
                         await Share.shareXFiles([XFile(temporaryFile.path)]);
 
@@ -157,7 +164,7 @@ showQRDialog(
                 ),
                 TextButton(
                   onPressed: () {
-                    print('Ir a inicio');
+                    onFinish();
                   },
                   child: Text(
                     'Finalizar',
