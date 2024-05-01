@@ -1,9 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mibigbro_ventas_mobile/screens/contact/contact_screen.dart';
+import 'package:mibigbro_ventas_mobile/screens/login/login_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/personal_data/personal_data_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/spacing.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeScreen extends StatelessWidget {
   HomeScreen({
@@ -64,115 +67,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           key: scaffoldKey,
-          drawer: Drawer(
-            child: Container(
-              height: double.infinity,
-              width: MediaQuery.of(context).size.width * 0.5,
-              color: Theme.of(context).primaryColor,
-              child: Column(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(40),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Icon(
-                            Icons.close,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 32,
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Row(
-                            children: [
-                              Icon(Icons.person_rounded, color: Colors.white),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Perfil',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // onTapIndex(3);
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.lock_clock, color: Colors.white),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Pendientes',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            // onTapIndex(4);
-                          },
-                          child: const Row(
-                            children: [
-                              Icon(Icons.chat, color: Colors.white),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Contacto',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 16,
-                        ),
-                        GestureDetector(
-                          onTap: () {},
-                          child: const Row(
-                            children: [
-                              Icon(Icons.exit_to_app, color: Colors.white),
-                              SizedBox(
-                                width: 8,
-                              ),
-                              Text(
-                                'Cerrar Sesión',
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 20),
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+          drawer: const HomeDrawer(),
           body: Column(
             children: [
               Container(
@@ -346,7 +241,7 @@ class HomeScreen extends StatelessWidget {
             icon: SvgPicture.asset(
               'assets/img/svg/conoce.svg',
             ),
-            onTapped: () {},
+            onTapped: _launchLandingURL,
           ),
           const SizedBox(
             height: 40,
@@ -354,6 +249,15 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  _launchLandingURL() async {
+    const url = 'http://www.mibigbro.com';
+    try {
+      await launchUrlString(url);
+    } catch (error) {
+      throw 'Could not launch $url';
+    }
   }
 
   Widget _optionButton({
@@ -493,6 +397,116 @@ class HomeScreen extends StatelessWidget {
                       fontWeight: FontWeight.w300,
                       color: AppColors.textBlack,
                       height: 1,
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class HomeDrawer extends StatelessWidget {
+  const HomeDrawer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Container(
+        height: double.infinity,
+        width: MediaQuery.of(context).size.width * 0.5,
+        color: Theme.of(context).primaryColor,
+        child: Column(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(40),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: const Icon(
+                      Icons.close,
+                      size: 40,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      // onTapIndex(3);
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.lock_clock, color: Colors.white),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Pendientes',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) {
+                            return const Contacto();
+                          },
+                        ),
+                      );
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.chat, color: Colors.white),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Contacto',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        )
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 16,
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const LoginScreen(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+                    child: const Row(
+                      children: [
+                        Icon(Icons.exit_to_app, color: Colors.white),
+                        SizedBox(
+                          width: 8,
+                        ),
+                        Text(
+                          'Cerrar Sesión',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        )
+                      ],
                     ),
                   ),
                 ],

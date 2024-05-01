@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
+import 'package:mibigbro_ventas_mobile/data/globals.dart';
 import 'package:mibigbro_ventas_mobile/screens/home/home_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/login/forgot_password/forgot_password_email_screen.dart';
 
@@ -43,11 +44,15 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _pass.text;
 
     final successResponse = await _loginController.login(
-      email: email,
-      password: password,
+      email: 'davidsamuelrios07@gmail.com',
+      // email: email,
+      password: 'Abrenet123*',
+      // password: password,
     );
 
     if (successResponse) {
+      gEmail = email;
+
       if (mounted) {
         Navigator.push(
           context,

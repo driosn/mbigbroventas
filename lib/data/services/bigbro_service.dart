@@ -86,6 +86,7 @@ class BigBroService {
       }
       throw Exception('Error inesperado');
     } catch (e) {
+      print(e);
       rethrow;
     }
   }
@@ -421,17 +422,12 @@ class BigBroService {
     String amount,
   ) async {
     try {
-      final response = await dio.post(
-        'http://br3.abrenet.com:9350/collections/generateQR',
-        data: {
-          "id": "3aadcc42-ea2e-11ee-9930-0242ac170005",
-          "prefix": "vi",
-          "amount": amount,
-        },
+      final response = await dio.get(
+        'http://181.188.186.158:8000/api/alianza/getQR/123123/',
       );
 
       if (response.isSuccess) {
-        return response.data['message'];
+        return response.data['data'];
       }
 
       throw Exception('Error inesperado');
