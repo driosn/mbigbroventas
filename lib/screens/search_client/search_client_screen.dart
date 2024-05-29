@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
@@ -19,6 +20,8 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
 
   final ValueNotifier<(bool, Client?)> searchClientNotifier =
       ValueNotifier((false, null));
+
+  final _ciController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -135,9 +138,14 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
   Widget _searchHeader(BuildContext context) {
     return Row(
       children: [
-        const Expanded(
+        Expanded(
           child: TextField(
-            decoration: InputDecoration(
+            controller: _ciController,
+            keyboardType: TextInputType.number,
+            inputFormatters: [
+              FilteringTextInputFormatter.digitsOnly,
+            ],
+            decoration: const InputDecoration(
               hintText: 'Buscar cliente por CI',
             ),
           ),
@@ -148,11 +156,15 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
         ElevatedButton(
           onPressed: () async {
             try {
+              if (_ciController.text.isEmpty) {
+                Fluttertoast.showToast(msg: 'Debe ingresar un número de CI');
+                return;
+              }
+
               searchClientNotifier.value = (true, null);
 
               final searchClientResponse = await _bigBroService.searchClient(
-                dni: '6765763',
-                // dni: '1',
+                dni: _ciController.text,
               );
 
               searchClientNotifier.value = (
