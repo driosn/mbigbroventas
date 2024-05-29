@@ -29,10 +29,11 @@ class SummaryScreen extends StatefulWidget {
   final InspeccionController inspectionController;
 
   static const TextStyle labelStyle = TextStyle(
-      color: Colors.red,
-      fontSize: 14.0,
-      fontFamily: 'Manrope',
-      fontWeight: FontWeight.w700);
+    color: Colors.red,
+    fontSize: 14.0,
+    fontFamily: 'Manrope',
+    fontWeight: FontWeight.w700,
+  );
   static const TextStyle infoStyle = TextStyle(
       color: Color(0xff1D2766),
       fontSize: 14.0,
