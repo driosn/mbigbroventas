@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/create_client_response.dart';
+import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/ciudad_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/pais_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/profesion_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/tipo_documento_model.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_extra_service.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
+import 'package:mibigbro_ventas_mobile/utils/extensions.dart';
 
 class PersonalDataController extends ChangeNotifier {
   PersonalDataController()
@@ -51,6 +53,28 @@ class PersonalDataController extends ChangeNotifier {
   String profession = '';
   String comercialActivity = '';
   int userId = 0;
+
+  void setClientData(Client client) {
+    name = client.nombre;
+    lastName = client.apellidoPaterno;
+    motherLastName = client.apellidoMaterno;
+    cellPhone = client.nroCelular;
+    birthdate = client.fechaNacimiento.dashedDate;
+    gender = client.genero;
+    civilStatus = client.estadoCivil;
+    documentType = client.tipoDocumento;
+    dni = client.numeroDocumento;
+    extension = client.extension;
+    email = client.usuario.email;
+    country = client.paisResidenciaId.toString();
+    nationality = client.nacionalidad;
+    city = client.ciudadId.toString();
+    address = client.direccionComercial;
+    profession = client.profesionId.toString();
+    comercialActivity = client.actividad;
+
+    userId = client.usuarioId;
+  }
 
   Future<CreateClientResponse?> createClient({
     required String name,
