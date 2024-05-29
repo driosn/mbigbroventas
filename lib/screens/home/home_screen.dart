@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mibigbro_ventas_mobile/screens/contact/contact_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/login/login_screen.dart';
-import 'package:mibigbro_ventas_mobile/screens/personal_data/personal_data_screen.dart';
+import 'package:mibigbro_ventas_mobile/screens/search_client/search_client_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/spacing.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -197,9 +197,10 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => const PersonalDataFormScreen(),
+                        builder: (_) => SearchClientScreen(),
                       ),
                     );
+                    return;
                   },
                 ),
               ),

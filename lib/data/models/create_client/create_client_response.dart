@@ -11,9 +11,9 @@ class CreateClientResponse {
 
   factory CreateClientResponse.fromJson(Map<String, dynamic> json) =>
       CreateClientResponse(
-        status: json["status"],
+        status: json["status"] ?? 0,
         result: json["result"],
-        mensaje: json["mensaje"],
+        mensaje: json["mensaje"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {

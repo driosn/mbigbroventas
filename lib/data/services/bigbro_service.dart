@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_car/create_car_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/create_client_response.dart';
+import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_inspection/create_inspection_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_policy/create_policy_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/get_slip/get_slip_response.dart';
@@ -32,6 +33,26 @@ class BigBroService {
       if (response.isSuccess) {
         return LoginResponse.fromJson(response.data);
       }
+      throw Exception('Error inesperado');
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<SearchClientResponse> searchClient({
+    required String dni,
+  }) async {
+    try {
+      final response = await dio.post(
+          'http://181.188.186.158:8000/api/datos_personales/find/',
+          data: {
+            'dni': dni,
+          });
+
+      if (response.isSuccess) {
+        return SearchClientResponse.fromJson(response.data);
+      }
+
       throw Exception('Error inesperado');
     } catch (e) {
       rethrow;
@@ -86,7 +107,6 @@ class BigBroService {
       }
       throw Exception('Error inesperado');
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -160,7 +180,6 @@ class BigBroService {
       }
       throw Exception('Error inesperado');
     } catch (e) {
-      print(e);
       rethrow;
     }
   }
@@ -416,7 +435,6 @@ class BigBroService {
     }
   }
 
-  // TODO: UPDATE
   Future<String> generateQR(
     String insuranceId,
     String amount,
@@ -432,7 +450,6 @@ class BigBroService {
 
       throw Exception('Error inesperado');
     } catch (exception) {
-      print(exception);
       rethrow;
     }
   }
