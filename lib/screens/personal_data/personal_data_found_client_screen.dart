@@ -62,6 +62,7 @@ class _PersonalDataFoundClientScreen
     _apellidoMaterno.text = client.apellidoMaterno;
     _celular.text = client.nroCelular;
     _nacimientoController.text = client.fechaNacimiento.slashedDate;
+    _fechaNacimiento = client.fechaNacimiento;
     _genero = client.genero;
     _estadoCivil = client.estadoCivil;
     _tipoDocumento = client.tipoDocumento;
@@ -95,7 +96,7 @@ class _PersonalDataFoundClientScreen
   int _ciudad = 0;
   int _pais = 0;
   String? _genero = "NN";
-  String? _estadoCivil = "NN";
+  String _estadoCivil = "NN";
   String? fotoUsuario;
   String _extDocumento = "NN";
   int _ocupacion = 0;
@@ -316,8 +317,8 @@ class _PersonalDataFoundClientScreen
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             TextFormField(
-                              controller: _nombre,
                               enabled: false,
+                              controller: _nombre,
                               decoration: const InputDecoration(
                                   labelText: 'Nombre',
                                   enabledBorder: UnderlineInputBorder(
@@ -340,8 +341,8 @@ class _PersonalDataFoundClientScreen
                               ],
                             ),
                             TextFormField(
-                              controller: _apellidoPaterno,
                               enabled: false,
+                              controller: _apellidoPaterno,
                               decoration: const InputDecoration(
                                   labelText: 'Apellido paterno',
                                   enabledBorder: UnderlineInputBorder(
@@ -364,8 +365,8 @@ class _PersonalDataFoundClientScreen
                               ],
                             ),
                             TextFormField(
-                              controller: _apellidoMaterno,
                               enabled: false,
+                              controller: _apellidoMaterno,
                               decoration: const InputDecoration(
                                   labelText: 'Apellido materno',
                                   enabledBorder: UnderlineInputBorder(
@@ -388,37 +389,12 @@ class _PersonalDataFoundClientScreen
                               ],
                             ),
                             TextFormField(
-                              controller: _celular,
-                              enabled: false,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                  labelText: 'Número de celular',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  _scrollController.animateTo(0.0,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.linear);
-                                  return 'Ingrese número de celular';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
                               inputFormatters: [
                                 FilteringTextInputFormatter.deny(''),
                               ],
                               readOnly: true,
-                              controller: _nacimientoController,
                               enabled: false,
+                              controller: _nacimientoController,
                               decoration: const InputDecoration(
                                 hintStyle: TextStyle(color: Colors.black45),
                                 errorStyle: TextStyle(
@@ -470,8 +446,25 @@ class _PersonalDataFoundClientScreen
                                 return null;
                               },
                             ),
+                            TextFormField(
+                              enabled: false,
+                              controller: _email,
+                              decoration: const InputDecoration(
+                                  labelText: 'Correo electrónico',
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff1D2766),
+                                    ),
+                                  )),
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  return 'Ingrese su correo';
+                                }
+                                return null;
+                              },
+                            ),
                             const SizedBox(
-                              height: 4,
+                              height: 6,
                             ),
                             const Text(
                               'Género',
@@ -495,28 +488,6 @@ class _PersonalDataFoundClientScreen
                               selectedItemBuilder: (BuildContext context) {
                                 return generoItems2;
                               },
-                              isExpanded: true,
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const Text(
-                              'Estado civil',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            DropdownButtonFormField(
-                              hint: const Text('Estado civil'),
-                              items: estadocivilItems,
-                              value: _estadoCivil,
-                              borderRadius: BorderRadius.circular(16),
-                              validator: (dynamic value) =>
-                                  value == "NN" ? 'NN' : null,
-                              onChanged: null,
-                              selectedItemBuilder: (context) =>
-                                  estadocivilItems2,
                               isExpanded: true,
                             ),
                             const SizedBox(
@@ -562,8 +533,8 @@ class _PersonalDataFoundClientScreen
                               isExpanded: true,
                             ),
                             TextFormField(
-                              controller: _nroDocumento,
                               enabled: false,
+                              controller: _nroDocumento,
                               decoration: const InputDecoration(
                                   labelText: 'Número de documento:',
                                   enabledBorder: UnderlineInputBorder(
@@ -584,13 +555,6 @@ class _PersonalDataFoundClientScreen
                             const SizedBox(
                               height: 4,
                             ),
-                            // const Text(
-                            // 'Extensión',
-                            // style: TextStyle(
-                            // fontSize: 12,
-                            // color: Colors.black54,
-                            // ),
-                            // ),
                             DropdownButtonFormField<String>(
                               decoration: const InputDecoration(
                                 hintStyle: TextStyle(color: Colors.black45),
@@ -631,23 +595,6 @@ class _PersonalDataFoundClientScreen
                               onChanged: null,
                               isExpanded: true,
                             ),
-                            TextFormField(
-                              controller: _email,
-                              enabled: false,
-                              decoration: const InputDecoration(
-                                  labelText: 'Correo electrónico',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese su correo';
-                                }
-                                return null;
-                              },
-                            ),
                             DropdownButtonFormField<int>(
                               decoration: const InputDecoration(
                                 hintStyle: TextStyle(color: Colors.black45),
@@ -667,9 +614,12 @@ class _PersonalDataFoundClientScreen
                               onChanged: null,
                               isExpanded: true,
                             ),
+                            const SizedBox(
+                              height: 4,
+                            ),
                             TextFormField(
-                              controller: _nacionalidad,
                               enabled: false,
+                              controller: _nacionalidad,
                               decoration: const InputDecoration(
                                   labelText: 'Nacionalidad',
                                   enabledBorder: UnderlineInputBorder(
@@ -722,9 +672,54 @@ class _PersonalDataFoundClientScreen
                               onChanged: null,
                               isExpanded: true,
                             ),
+                            const SizedBox(
+                              height: 4,
+                            ),
+                            const Text(
+                              'Estado civil',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.black54,
+                              ),
+                            ),
+                            DropdownButtonFormField(
+                              hint: const Text('Estado civil'),
+                              items: estadocivilItems,
+                              value: _estadoCivil,
+                              borderRadius: BorderRadius.circular(16),
+                              validator: (dynamic value) =>
+                                  value == "NN" ? 'NN' : null,
+                              onChanged: null,
+                              selectedItemBuilder: (context) =>
+                                  estadocivilItems2,
+                              isExpanded: true,
+                            ),
+                            TextFormField(
+                              controller: _celular,
+                              keyboardType: TextInputType.number,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                              ],
+                              decoration: const InputDecoration(
+                                  labelText: 'Número de celular',
+                                  enabledBorder: UnderlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Color(0xff1D2766),
+                                    ),
+                                  )),
+                              validator: (String? value) {
+                                if (value!.isEmpty) {
+                                  _scrollController.animateTo(0.0,
+                                      duration:
+                                          const Duration(milliseconds: 600),
+                                      curve: Curves.linear);
+                                  return 'Ingrese número de celular';
+                                }
+                                return null;
+                              },
+                            ),
                             TextFormField(
                               controller: _direccion,
-                              enabled: false,
                               decoration: const InputDecoration(
                                 labelText: 'Dirección',
                               ),
@@ -753,7 +748,6 @@ class _PersonalDataFoundClientScreen
                             ),
                             SelectorProfesion(
                               ocupacionInicial: _ocupacion,
-                              enabled: false,
                               profesiones: personalDataController.profesiones,
                               onChanged: (profesion) {
                                 _ocupacion = profesion.idAlianza;
@@ -761,7 +755,6 @@ class _PersonalDataFoundClientScreen
                             ),
                             TextFormField(
                               controller: _actividad,
-                              enabled: false,
                               decoration: const InputDecoration(
                                   labelText: 'Actividad comercial:',
                                   enabledBorder: UnderlineInputBorder(
@@ -786,18 +779,58 @@ class _PersonalDataFoundClientScreen
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 ElevatedButton(
-                                  onPressed: () {
-                                    personalDataController
-                                        .setClientData(client);
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (_) => CarDataScreen(
-                                          personalDataController:
-                                              personalDataController,
-                                        ),
-                                      ),
-                                    );
+                                  onPressed: () async {
+                                    if (_formKey.currentState!.validate()) {
+                                      final clientResponse =
+                                          await personalDataController
+                                              .createClient(
+                                        name: _nombre.text,
+                                        lastName: _apellidoPaterno.text,
+                                        motherLastName: _apellidoMaterno.text,
+                                        cellPhone: _celular.text,
+                                        birthdate:
+                                            (_fechaNacimiento ?? DateTime.now())
+                                                .dashedDate,
+                                        gender: _genero!,
+                                        civilStatus: _estadoCivil,
+                                        documentType: _tipoDocumento!,
+                                        dni: _nroDocumento.text,
+                                        extension: _extDocumento,
+                                        email: _email.text,
+                                        country: _pais.toString(),
+                                        nationality: _nacionalidad.text,
+                                        city: _ciudad.toString(),
+                                        address: _direccion.text,
+                                        profession: _ocupacion.toString(),
+                                        comercialActivity: _actividad.text,
+                                      );
+
+                                      if (clientResponse != null) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => CarDataScreen(
+                                              personalDataController:
+                                                  personalDataController,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        // TODO: Manejar errores
+                                      }
+                                    }
+
+                                    // personalDataController
+                                    // .setClientData(client);
+                                    // Navigator.push(
+                                    // context,
+                                    // MaterialPageRoute(
+                                    // builder: (_) => CarDataScreen(
+                                    // personalDataController:
+                                    // personalDataController,
+                                    // ),
+                                    // ),
+                                    // );
                                   },
                                   child: const Padding(
                                     padding: EdgeInsets.symmetric(

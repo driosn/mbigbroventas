@@ -164,7 +164,8 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
               searchClientNotifier.value = (true, null);
 
               final searchClientResponse = await _bigBroService.searchClient(
-                dni: _ciController.text,
+                dni: '6765763',
+                // dni: _ciController.text,
               );
 
               searchClientNotifier.value = (
