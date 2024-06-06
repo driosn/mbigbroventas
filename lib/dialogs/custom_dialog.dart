@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 
 // class CustomDialog {
 //   final BuildContext context;
@@ -105,6 +106,7 @@ class CustomDialog extends StatelessWidget {
                                     'Cerrar',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
+                                      color: AppColors.primary,
                                     ),
                                   ),
                                 ),

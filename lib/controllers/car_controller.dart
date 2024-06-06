@@ -3,11 +3,13 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_car/create_car_response.dart';
+import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/ciudad_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/marca_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/modelo_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/uso_model.dart';
 import 'package:mibigbro_ventas_mobile/data/models/extra/year_model.dart';
+import 'package:mibigbro_ventas_mobile/data/models/poliza.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_extra_service.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
 
@@ -62,6 +64,24 @@ class CarController extends ChangeNotifier {
   String nombreUso = '';
   String nombreCiudad = '';
 
+  void setCarDataByPoliza(Poliza poliza, Client client) {
+    issueValue = poliza.valorAsegurado.toInt();
+    userId = client.usuarioId;
+    uso = poliza.idUso;
+    ciudad = poliza.idCiudad;
+    modelo = poliza.idModelo;
+    marca = poliza.idMarca;
+    year = poliza.idYear;
+    carId = poliza.idAutomovil;
+    placa = poliza.placa;
+    nombreMarca = poliza.marca;
+    nombreModelo = poliza.modelo;
+    nombreUso = poliza.uso;
+    nombreCiudad = poliza.ciudad;
+
+    userId = client.usuarioId;
+  }
+
   void updateNames({
     required String nombreMarca,
     required String nombreModelo,
@@ -111,6 +131,35 @@ class CarController extends ChangeNotifier {
     }
   }
 
+  Future<CreateCarResponse?> updateValorAsegurado({
+    required int carId,
+    required int issueValue,
+    required int userId,
+    required int use,
+    required int classId,
+    required int city,
+    required int model,
+    required int year,
+  }) async {
+    try {
+      final carResponse = await bigBroService.updateValorAsegurado(
+        carId: carId,
+        issueValue: issueValue,
+        userId: userId,
+        use: use,
+        classId: classId,
+        city: city,
+        model: model,
+        year: year,
+      );
+
+      return carResponse;
+    } catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   Future<CreateCarResponse?> updateCarWithRuat({
     required File ruatPhoto,
     required int userId,
@@ -120,7 +169,7 @@ class CarController extends ChangeNotifier {
     required String cilindrada,
   }) async {
     try {
-      final carResponse = await bigBroService.updateCar(
+      final carResponse = await bigBroService.updateCarWithRuat(
         issueValue: issueValue,
         userId: userId,
         use: uso,

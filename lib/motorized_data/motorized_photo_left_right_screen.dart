@@ -11,6 +11,7 @@ import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_extra_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 
@@ -41,9 +42,12 @@ class _MotorizedPhotoLeftRightScreenState
   final _pageController = PageController();
   double currentPage = 0.0;
 
+  late ValueNotifier<bool> _isLoadingNotifier;
+
   @override
   void initState() {
     super.initState();
+    _isLoadingNotifier = ValueNotifier<bool>(false);
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page ?? 0.0;
@@ -95,239 +99,274 @@ class _MotorizedPhotoLeftRightScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BigBroScaffold(
-      title: 'Datos del motorizado',
-      subtitle: 'Foto del automóvil',
-      subtitleStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 16,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 46,
-          ),
-          child: Column(
+    return ValueListenableBuilder<bool>(
+        valueListenable: _isLoadingNotifier,
+        builder: (context, isLoading, child) {
+          return Stack(
             children: [
-              const SizedBox(
-                height: 32,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 440,
-                child: PageView(
-                  controller: _pageController,
-                  children: [
-                    SelectorFoto(
-                      onTapImagen: () {
-                        getImage("IZQUIERDA");
-                      },
-                      imagen: imageLateralIzquierdo,
-                      onTapInfo: () {
-                        CustomDialog(
-                          context: context,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          icon: const Icon(
-                            Icons.camera_alt_outlined,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          content: Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Tomar en cuenta para la foto',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                'Foto lado Izquierdo',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text(
-                                  'La foto debe mostrar toda la parte lateral izquierda del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
-                              const SizedBox(
-                                height: 32,
-                              )
-                            ],
-                          ),
-                          extraActions: const [],
-                          hideActions: false,
-                        );
-                      },
-                      placeHolderAsset: 'assets/img/foto_automovil_lateral.png',
-                      description:
-                          'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
-                    ),
-                    SelectorFoto(
-                      onTapImagen: () {
-                        getImage("DERECHA");
-                      },
-                      reversePlaceholder: true,
-                      imagen: imageLateralDerecho,
-                      onTapInfo: () {
-                        CustomDialog(
-                          context: context,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          icon: const Icon(
-                            Icons.camera_alt_outlined,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          content: Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Tomar en cuenta para la foto',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                'Foto lado derecho',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text(
-                                  'La foto debe mostrar toda la parte lateral derecha del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
-                              const SizedBox(
-                                height: 32,
-                              )
-                            ],
-                          ),
-                          extraActions: const [],
-                          hideActions: false,
-                        );
-                      },
-                      placeHolderAsset: 'assets/img/automovil_lateral_der.png',
-                      description:
-                          'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
-                    ),
-                    _PreviewFotos(
-                      imageFrontal: imageLateralIzquierdo,
-                      imageTrasera: imageLateralDerecho,
-                    )
-                  ],
+              BigBroScaffold(
+                title: 'Datos del motorizado',
+                subtitle: 'Foto del automóvil',
+                subtitleStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
                 ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              DotsIndicator(
-                dotsCount: 3,
-                position: currentPage.toInt(),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(0.0),
-                        backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).primaryColor,
+                body: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 46,
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 32,
                         ),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: const BorderSide(
-                              width: 1.0,
-                              color: Colors.white,
-                            ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 440,
+                          child: PageView(
+                            controller: _pageController,
+                            children: [
+                              SelectorFoto(
+                                onTapImagen: () {
+                                  getImage("IZQUIERDA");
+                                },
+                                imagen: imageLateralIzquierdo,
+                                onTapInfo: () {
+                                  CustomDialog(
+                                    context: context,
+                                    iconColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                    content: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Tomar en cuenta para la foto',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          'Foto lado Izquierdo',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        const Text(
+                                            'La foto debe mostrar toda la parte lateral izquierda del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
+                                        const SizedBox(
+                                          height: 32,
+                                        )
+                                      ],
+                                    ),
+                                    extraActions: const [],
+                                    hideActions: false,
+                                  );
+                                },
+                                placeHolderAsset:
+                                    'assets/img/foto_automovil_lateral.png',
+                                description:
+                                    'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
+                              ),
+                              SelectorFoto(
+                                onTapImagen: () {
+                                  getImage("DERECHA");
+                                },
+                                reversePlaceholder: true,
+                                imagen: imageLateralDerecho,
+                                onTapInfo: () {
+                                  CustomDialog(
+                                    context: context,
+                                    iconColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                    content: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Tomar en cuenta para la foto',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          'Foto lado derecho',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        const Text(
+                                            'La foto debe mostrar toda la parte lateral derecha del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
+                                        const SizedBox(
+                                          height: 32,
+                                        )
+                                      ],
+                                    ),
+                                    extraActions: const [],
+                                    hideActions: false,
+                                  );
+                                },
+                                placeHolderAsset:
+                                    'assets/img/automovil_lateral_der.png',
+                                description:
+                                    'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
+                              ),
+                              _PreviewFotos(
+                                imageFrontal: imageLateralIzquierdo,
+                                imageTrasera: imageLateralDerecho,
+                              )
+                            ],
                           ),
                         ),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
+                        const SizedBox(
+                          height: 12,
                         ),
-                        child: const Text(
-                          'Continuar',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        DotsIndicator(
+                          dotsCount: 3,
+                          position: currentPage.toInt(),
                         ),
-                      ),
-                      onPressed: () async {
-                        if (_pageController.page == 2.0) {
-                          if (imageLateralIzquierdo != null &&
-                              imageLateralDerecho != null) {
-                            final inspectionResponse =
-                                await widget.inspectionController.update1(
-                              lateralDer: imageLateralDerecho!,
-                              lateralIzq: imageLateralIzquierdo!,
-                              carId: widget.carController.carId,
-                            );
-
-                            if (inspectionResponse != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => MotorizedPhotoExtraScreen(
-                                    carController: widget.carController,
-                                    inspectionController:
-                                        widget.inspectionController,
-                                    paqueteStock: widget.paqueteStock,
-                                    personalDataController:
-                                        widget.personalDataController,
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation: WidgetStateProperty.all(0.0),
+                                  backgroundColor: WidgetStateProperty.all(
+                                    Theme.of(context).primaryColor,
+                                  ),
+                                  shape: WidgetStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      side: const BorderSide(
+                                        width: 1.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            } else {
-                              // TODO: Manejar Excepciones
-                            }
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: 'Debe subir las fotos laterales',
-                            );
-                          }
-                        } else {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 750),
-                            curve: Curves.linear,
-                          );
-                        }
-                      },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  child: const Text(
+                                    'Continuar',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  if (_pageController.page == 2.0) {
+                                    if (imageLateralIzquierdo != null &&
+                                        imageLateralDerecho != null) {
+                                      _isLoadingNotifier.value = true;
+
+                                      final inspectionResponse = await widget
+                                          .inspectionController
+                                          .update1(
+                                        lateralDer: imageLateralDerecho!,
+                                        lateralIzq: imageLateralIzquierdo!,
+                                        carId: widget.carController.carId,
+                                      );
+
+                                      if (inspectionResponse != null) {
+                                        _isLoadingNotifier.value = false;
+
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                MotorizedPhotoExtraScreen(
+                                              carController:
+                                                  widget.carController,
+                                              inspectionController:
+                                                  widget.inspectionController,
+                                              paqueteStock: widget.paqueteStock,
+                                              personalDataController:
+                                                  widget.personalDataController,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        _isLoadingNotifier.value = false;
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Hubo un problema al subir las fotos laterales',
+                                        );
+                                      }
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg: 'Debe subir las fotos laterales',
+                                      );
+                                    }
+                                  } else {
+                                    _pageController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 750),
+                                      curve: Curves.linear,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
+              if (isLoading)
+                Container(
+                  color: AppColors.primary.withOpacity(0.2),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
             ],
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 

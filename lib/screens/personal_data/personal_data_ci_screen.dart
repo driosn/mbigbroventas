@@ -6,6 +6,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
 import 'package:mibigbro_ventas_mobile/screens/car_data/car_data_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 
 class PersonalDataCIScreen extends StatefulWidget {
   const PersonalDataCIScreen({
@@ -37,6 +38,8 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
   final _pageController = PageController();
   double currentPage = 0.0;
 
+  late ValueNotifier<bool> _loadingNotifier;
+
   @override
   void initState() {
     super.initState();
@@ -45,6 +48,7 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
         currentPage = _pageController.page ?? 0.0;
       });
     });
+    _loadingNotifier = ValueNotifier<bool>(false);
   }
 
   Future getImage(String tipoFoto) async {
@@ -73,193 +77,229 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
   @override
   Widget build(BuildContext context) {
     // Build a Form widget using the _formKey created above.
-    return Scaffold(
-        body: Column(
-      children: [
-        Container(
-          height: 190,
-          width: double.infinity,
-          decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
-            borderRadius: const BorderRadius.only(
-              bottomLeft: Radius.circular(20),
-              bottomRight: Radius.circular(20),
-            ),
-          ),
-          padding: const EdgeInsets.only(
-            top: kToolbarHeight,
-            left: 16,
-          ),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_ios),
-                  color: Theme.of(context).colorScheme.secondary,
-                  onPressed: () => Navigator.pop(context),
-                ),
-                const Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      height: 8,
-                    ),
-                    Text(
-                      'Datos Personales',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
+    return ValueListenableBuilder(
+      valueListenable: _loadingNotifier,
+      builder: (context, loading, child) {
+        return Stack(
+          children: [
+            Scaffold(
+              body: Column(
+                children: [
+                  Container(
+                    height: 190,
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).primaryColor,
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(20),
+                        bottomRight: Radius.circular(20),
                       ),
                     ),
-                    SizedBox(
-                      height: 12,
+                    padding: const EdgeInsets.only(
+                      top: kToolbarHeight,
+                      left: 16,
                     ),
-                    Text(
-                      'Actualizar mi perfil',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Center(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      const SizedBox(
-                        height: 20,
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 440,
-                        child: PageView(
-                          controller: _pageController,
-                          children: [
-                            _FotoFrontal(
-                              imageCiFrontal: _imageCiFrontal,
-                              ciFrontalCargado: ciFrontaCargado,
-                              onTap: () {
-                                getImage('ciFrontal');
-                              },
-                            ),
-                            _FotoTrasera(
-                              imageCiTrasera: _imageCiTrasera,
-                              ciTraseraCargado: ciTraseraCargado,
-                              onTap: () {
-                                getImage('ciTrasera');
-                              },
-                            ),
-                            _PreviewFotos(
-                              imageCiFrontal: _imageCiFrontal,
-                              ciFrontalCargado: ciFrontaCargado,
-                              ciTraseraCargado: ciTraseraCargado,
-                              imageCiTrasera: _imageCiTrasera,
-                            )
-                          ],
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      DotsIndicator(
-                        dotsCount: 3,
-                        position: currentPage.toInt(),
-                      ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      Row(
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: ElevatedButton(
-                              style: ButtonStyle(
-                                elevation: MaterialStateProperty.all(0.0),
-                                backgroundColor: MaterialStateProperty.all(
-                                  Theme.of(context).primaryColor,
-                                ),
-                                shape: MaterialStateProperty.all(
-                                  RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    side: const BorderSide(
-                                      width: 1.0,
-                                      color: Colors.white,
-                                    ),
-                                  ),
+                          IconButton(
+                            icon: const Icon(Icons.arrow_back_ios),
+                            color: Theme.of(context).colorScheme.secondary,
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          const Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              SizedBox(
+                                height: 8,
+                              ),
+                              Text(
+                                'Datos Personales',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 20,
                                 ),
                               ),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 10,
-                                ),
-                                child: const Text(
-                                  'Continuar',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                              SizedBox(
+                                height: 12,
                               ),
-                              onPressed: () async {
-                                if (_pageController.page == 2.0) {
-                                  if (_imageCiFrontal != null &&
-                                      _imageCiTrasera != null) {
-                                    final clientResponse = await widget
-                                        .personalDataController
-                                        .updateClientCI(
-                                      ciFrontal: _imageCiFrontal!,
-                                      ciTrasero: _imageCiTrasera!,
-                                    );
-
-                                    if (clientResponse != null) {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (_) => CarDataScreen(
-                                            personalDataController:
-                                                widget.personalDataController,
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      // TODO: Actualizar excepciones
-                                    }
-                                  } else {
-                                    Fluttertoast.showToast(
-                                      msg:
-                                          'Imagen Frontal y Trasera son requeridas',
-                                    );
-                                  }
-                                } else {
-                                  _pageController.nextPage(
-                                    duration: const Duration(milliseconds: 750),
-                                    curve: Curves.linear,
-                                  );
-                                }
-                              },
-                            ),
+                              Text(
+                                'Actualizar el perfil',
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 16),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Form(
+                        key: _formKey,
+                        child: Center(
+                          child: Padding(
+                            padding: const EdgeInsets.fromLTRB(50, 10, 50, 10),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const SizedBox(
+                                  height: 20,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 440,
+                                  child: PageView(
+                                    controller: _pageController,
+                                    children: [
+                                      _FotoFrontal(
+                                        imageCiFrontal: _imageCiFrontal,
+                                        ciFrontalCargado: ciFrontaCargado,
+                                        onTap: () {
+                                          getImage('ciFrontal');
+                                        },
+                                      ),
+                                      _FotoTrasera(
+                                        imageCiTrasera: _imageCiTrasera,
+                                        ciTraseraCargado: ciTraseraCargado,
+                                        onTap: () {
+                                          getImage('ciTrasera');
+                                        },
+                                      ),
+                                      _PreviewFotos(
+                                        imageCiFrontal: _imageCiFrontal,
+                                        ciFrontalCargado: ciFrontaCargado,
+                                        ciTraseraCargado: ciTraseraCargado,
+                                        imageCiTrasera: _imageCiTrasera,
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                DotsIndicator(
+                                  dotsCount: 3,
+                                  position: currentPage.toInt(),
+                                ),
+                                const SizedBox(
+                                  height: 12,
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: ElevatedButton(
+                                        style: ButtonStyle(
+                                          elevation:
+                                              WidgetStateProperty.all(0.0),
+                                          backgroundColor:
+                                              WidgetStateProperty.all(
+                                            Theme.of(context).primaryColor,
+                                          ),
+                                          shape: WidgetStateProperty.all(
+                                            RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              side: const BorderSide(
+                                                width: 1.0,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                        child: Container(
+                                          padding: const EdgeInsets.symmetric(
+                                            vertical: 10,
+                                          ),
+                                          child: const Text(
+                                            'Continuar',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                        onPressed: () async {
+                                          if (_pageController.page == 2.0) {
+                                            if (_imageCiFrontal != null &&
+                                                _imageCiTrasera != null) {
+                                              _loadingNotifier.value = true;
+                                              final clientResponse =
+                                                  await widget
+                                                      .personalDataController
+                                                      .updateClientCI(
+                                                ciFrontal: _imageCiFrontal!,
+                                                ciTrasero: _imageCiTrasera!,
+                                              );
+
+                                              if (clientResponse != null) {
+                                                _loadingNotifier.value = false;
+                                                print('Client Response');
+                                                Navigator.push(
+                                                  // ignore: use_build_context_synchronously
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CarDataScreen(
+                                                      personalDataController: widget
+                                                          .personalDataController,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                // TODO: Actualizar excepciones
+                                                _loadingNotifier.value = false;
+
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Hubo un problema cargando las imágenes, inténtelo de nuevo o contacte a su administrador',
+                                                  toastLength:
+                                                      Toast.LENGTH_LONG,
+                                                );
+                                              }
+                                            } else {
+                                              Fluttertoast.showToast(
+                                                msg:
+                                                    'Imagen Frontal y Trasera son requeridas',
+                                              );
+                                            }
+                                          } else {
+                                            _pageController.nextPage(
+                                              duration: const Duration(
+                                                  milliseconds: 750),
+                                              curve: Curves.linear,
+                                            );
+                                          }
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
-          ),
-        ),
-      ],
-    ));
+            if (loading)
+              Container(
+                color: AppColors.primary.withOpacity(0.20),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+          ],
+        );
+      },
+    );
   }
 }
 
@@ -324,7 +364,7 @@ class _FotoFrontal extends StatelessWidget {
             height: 14,
           ),
           const Text(
-            'Toma una fotografía de la parte frontal de tu cédula de identidad',
+            'Toma una fotografía de la parte frontal de la cédula de identidad',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey,
@@ -398,7 +438,7 @@ class _FotoTrasera extends StatelessWidget {
             height: 14,
           ),
           const Text(
-            'Toma una fotografía de la parte posterior de tu cédula de identidad',
+            'Toma una fotografía de la parte posterior de la cédula de identidad',
             textAlign: TextAlign.center,
             style: TextStyle(
               color: Colors.grey,

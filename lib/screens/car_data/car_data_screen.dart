@@ -93,7 +93,7 @@ class CarDataScreenState extends State<CarDataScreen> {
 
     return BigBroScaffold(
       title: 'Datos del Motorizado',
-      subtitle: 'Ingrese los datos de tu motorizado',
+      subtitle: 'Ingrese los datos del motorizado',
       body: ListenableBuilder(
           listenable: _carController,
           builder: (context, child) {
@@ -387,13 +387,6 @@ class CarDataScreenState extends State<CarDataScreen> {
                           const SizedBox(
                             height: 4,
                           ),
-                          const Text(
-                            'Valor asegurado (Dólares)',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.black54,
-                            ),
-                          ),
                           TextFormField(
                             controller: _valor,
                             maxLength: 9,
@@ -422,7 +415,7 @@ class CarDataScreenState extends State<CarDataScreen> {
                               const Expanded(
                                   flex: 3,
                                   child: Text(
-                                      "Incluye el valor por el que asegurarás tu auto, el cual no puede ser menor a 5.000 USD ni mayor a 30.000 USD",
+                                      "Incluye el valor por el que asegurarás el auto, el cual no puede ser menor a 5.000 USD ni mayor a 30.000 USD",
                                       style: TextStyle(
                                           color: Color(0xff1D2766),
                                           fontSize: 10))),

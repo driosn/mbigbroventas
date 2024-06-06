@@ -1,15 +1,18 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
+import 'package:mibigbro_ventas_mobile/screens/applications/applications_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/contact/contact_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/login/login_screen.dart';
+import 'package:mibigbro_ventas_mobile/screens/search_client/search_client_renovation_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/search_client/search_client_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/spacing.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
-class HomeScreen extends StatelessWidget {
-  HomeScreen({
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({
     super.key,
   });
 
@@ -48,6 +51,11 @@ class HomeScreen extends StatelessWidget {
     fontWeight: FontWeight.w400,
   );
 
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -116,7 +124,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     VerticalSpacing.m,
                     Text(
-                      'Bienvenid@, Laura',
+                      'Bienvenid@, ${loginControllerInstance.loginResponse!.usarioNombre}',
                       style: TextStyle(
                         color: Theme.of(context).scaffoldBackgroundColor,
                         fontSize: 20,
@@ -197,7 +205,7 @@ class HomeScreen extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SearchClientScreen(),
+                        builder: (_) => const SearchClientScreen(),
                       ),
                     );
                     return;
@@ -215,7 +223,14 @@ class HomeScreen extends StatelessWidget {
                     const Color(0xff1D2766).withOpacity(0.86),
                     const Color(0xff1A2461),
                   ],
-                  onTapped: () {},
+                  onTapped: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const SearchClientRenovationScreen(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -230,7 +245,14 @@ class HomeScreen extends StatelessWidget {
             icon: SvgPicture.asset(
               'assets/img/svg/solicitudes.svg',
             ),
-            onTapped: () {},
+            onTapped: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ApplicationsScreen(),
+                ),
+              );
+            },
           ),
           const SizedBox(
             height: 28,

@@ -125,7 +125,7 @@ class _MotorizedDataCRPVAScreenState extends State<MotorizedDataCRPVAScreen> {
 
     return BigBroScaffold(
       title: appTitle,
-      subtitle: 'Ingrese los datos del certificado CRPVA de\nsu automóvil',
+      subtitle: 'Ingrese los datos del certificado CRPVA\ndel automóvil',
       body: SingleChildScrollView(
         child: Form(
           key: _formKeyDetalleMotorizado,

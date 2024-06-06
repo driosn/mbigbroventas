@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_car/create_car_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/create_client_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
@@ -9,6 +10,7 @@ import 'package:mibigbro_ventas_mobile/data/models/create_policy/create_policy_r
 import 'package:mibigbro_ventas_mobile/data/models/get_slip/get_slip_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/login/login_response.dart';
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
+import 'package:mibigbro_ventas_mobile/data/models/poliza.dart';
 
 extension ResponseX on Response {
   bool get isSuccess => (statusCode ?? 0) == 200 || (statusCode ?? 0) == 201;
@@ -216,7 +218,43 @@ class BigBroService {
     }
   }
 
-  Future<CreateCarResponse> updateCar({
+  Future<CreateCarResponse> updateValorAsegurado({
+    required int carId,
+    required int issueValue,
+    required int userId,
+    required int use,
+    required int classId,
+    required int city,
+    required int model,
+    required int year,
+  }) async {
+    try {
+      final formData = {
+        "valor_asegurado": issueValue,
+        "usuario": userId,
+        "uso": use,
+        "clase": classId,
+        "ciudad": city,
+        "modelo": model,
+        "year": year,
+      };
+
+      final response = await dio.put(
+        'http://181.188.186.158:8000/api/automovil/update/$carId',
+        data: formData,
+      );
+
+      if (response.isSuccess) {
+        return CreateCarResponse.fromJson(response.data);
+      }
+      throw Exception('Error inesperado');
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+  }
+
+  Future<CreateCarResponse> updateCarWithRuat({
     required int carId,
     required File ruatPhoto,
     required int issueValue,
@@ -383,6 +421,8 @@ class BigBroService {
     required int renovationNumber,
   }) async {
     try {
+      final token = loginControllerInstance.loginResponse!.token;
+
       final response = await dio.post(
         'http://181.188.186.158:8000/api/poliza/create/',
         data: {
@@ -398,6 +438,12 @@ class BigBroService {
           "url_slip": "",
           "nro_renovacion": renovationNumber,
         },
+        options: Options(
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Token $token'
+          },
+        ),
       );
 
       if (response.isSuccess) {
@@ -446,6 +492,58 @@ class BigBroService {
 
       if (response.isSuccess) {
         return response.data['data'];
+      }
+
+      throw Exception('Error inesperado');
+    } catch (exception) {
+      rethrow;
+    }
+  }
+
+  Future<List<Poliza>> getPolizaByStatus({
+    required String status,
+    required String dni,
+  }) async {
+    try {
+      final response = await dio.get(
+          'http://181.188.186.158:8000/api/poliza/lista/?estado=VENCIDO&dni=$dni');
+
+      if (response.isSuccess) {
+        return List<Poliza>.from(
+          (response.data as List<dynamic>).map(
+            (json) => Poliza.fromJson(json),
+          ),
+        );
+      }
+
+      throw Exception('Error inesperado');
+    } catch (exception) {
+      rethrow;
+    }
+  }
+
+  Future<List<Poliza>> getPolizaByStatusAndUserToken({
+    required String status,
+  }) async {
+    try {
+      final token = loginControllerInstance.loginResponse!.token;
+
+      final response = await dio.get(
+        'http://181.188.186.158:8000/api/poliza/lista/fuerza/venta/?estado=$status',
+        // options: Options(
+        //   headers: <String, String>{
+        //     'Content-Type': 'application/json; charset=UTF-8',
+        //     'Authorization': 'Token $token'
+        //   },
+        // ),
+      );
+
+      if (response.isSuccess) {
+        return List<Poliza>.from(
+          (response.data as List<dynamic>).map(
+            (json) => Poliza.fromJson(json),
+          ),
+        );
       }
 
       throw Exception('Error inesperado');

@@ -33,34 +33,37 @@ class _LoginScreenState extends State<LoginScreen> {
   // Notifiers
   //
   final ValueNotifier<bool> _showPasswordNotifier = ValueNotifier(false);
+  final ValueNotifier<bool> _isErrorLogin = ValueNotifier(false);
 
   //
   // Own Controllers
   //
-  final LoginController _loginController = LoginController();
 
   void _login() async {
     final email = _email.text;
     final password = _pass.text;
 
-    final successResponse = await _loginController.login(
-      email: 'davidsamuelrios07@gmail.com',
-      // email: email,
-      password: 'Abrenet123*',
-      // password: password,
+    final successResponse = await loginControllerInstance.login(
+      // email: 'davidsamuelrios07@gmail.com',
+      email: email,
+      // password: 'Abrenet123*',
+      password: password,
     );
 
     if (successResponse) {
+      _isErrorLogin.value = false;
       gEmail = email;
 
       if (mounted) {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => HomeScreen(),
+            builder: (context) => const HomeScreen(),
           ),
         );
       }
+    } else {
+      _isErrorLogin.value = true;
     }
   }
 
@@ -121,7 +124,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-        listenable: _loginController,
+        listenable: loginControllerInstance,
         builder: (context, child) {
           return Scaffold(
             backgroundColor: Colors.white,
@@ -244,18 +247,36 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                             const SizedBox(
+                              height: 8,
+                            ),
+                            ValueListenableBuilder<bool>(
+                              valueListenable: _isErrorLogin,
+                              builder: (context, isError, child) {
+                                if (isError) {
+                                  return const Center(
+                                    child: Text(
+                                      'Correo o contraseña incorrectos',
+                                      style: TextStyle(
+                                        color: Colors.red,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return const SizedBox();
+                              },
+                            ),
+                            const SizedBox(
                               height: 80,
                             ),
                             ElevatedButton(
                               style: ButtonStyle(
-                                shape: MaterialStateProperty.all(
+                                shape: WidgetStateProperty.all(
                                     RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8),
                                 )),
-                                elevation:
-                                    MaterialStateProperty.all<double>(0.0),
-                                backgroundColor:
-                                    MaterialStateProperty.all<Color>(
+                                elevation: WidgetStateProperty.all<double>(0.0),
+                                backgroundColor: WidgetStateProperty.all<Color>(
                                   const Color(0xff1D2766),
                                 ),
                               ),

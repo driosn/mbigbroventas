@@ -11,6 +11,7 @@ import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/screens/signature/signature_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 
@@ -40,12 +41,15 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
   final _pageController = PageController();
   double currentPage = 0.0;
 
+  late ValueNotifier<bool> _isLoadingNotifier;
+
   ValueNotifier<String> subtitleNotifier =
       ValueNotifier<String>('Foto del tablero del automóvil');
 
   @override
   void initState() {
     super.initState();
+    _isLoadingNotifier = ValueNotifier<bool>(false);
     _pageController.addListener(() {
       setState(
         () {
@@ -66,6 +70,12 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
         },
       );
     });
+  }
+
+  @override
+  void dispose() {
+    _isLoadingNotifier.dispose();
+    super.dispose();
   }
 
   Future getImage(String tipoFoto) async {
@@ -115,238 +125,275 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
     return ValueListenableBuilder<String>(
       valueListenable: subtitleNotifier,
       builder: (context, subtitle, child) {
-        return BigBroScaffold(
-          title: 'Datos del motorizado',
-          subtitle: subtitle,
-          subtitleStyle: const TextStyle(
-            color: Colors.white,
-            fontSize: 16,
-          ),
-          body: SingleChildScrollView(
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 46,
-              ),
-              child: Column(
-                children: [
-                  const SizedBox(
-                    height: 32,
+        return ValueListenableBuilder<bool>(
+          valueListenable: _isLoadingNotifier,
+          builder: (context, isLoading, child) {
+            return Stack(
+              children: [
+                BigBroScaffold(
+                  title: 'Datos del motorizado',
+                  subtitle: subtitle,
+                  subtitleStyle: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
                   ),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 440,
-                    child: PageView(
-                      controller: _pageController,
-                      children: [
-                        SelectorFoto(
-                          onTapImagen: () {
-                            getImage("TABLERO");
-                          },
-                          imagen: imageTablero,
-                          onTapInfo: () {
-                            CustomDialog(
-                              context: context,
-                              iconColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 40,
-                                color: Colors.white,
-                              ),
-                              content: Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    'Tomar en cuenta para la foto',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Text(
-                                    'Foto del tablero',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  const Text(
-                                      'La foto debe mostrar todo el tablero del automóvil, asegurate de que se pueda ver la marca de la radio'),
-                                  const SizedBox(
-                                    height: 32,
-                                  )
-                                ],
-                              ),
-                              extraActions: const [],
-                              hideActions: false,
-                            );
-                          },
-                          placeHolderAsset: 'assets/img/foto_tablero.png',
-                          description:
-                              'Se debe tomar la fotografía en un lugar iluminado y con el tablero encendido',
-                        ),
-                        SelectorFoto(
-                          onTapImagen: () {
-                            getImage("DAMAGE");
-                          },
-                          imagen: imageDamage,
-                          onTapInfo: () {
-                            CustomDialog(
-                              context: context,
-                              iconColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 40,
-                                color: Colors.white,
-                              ),
-                              content: Column(
-                                children: [
-                                  const SizedBox(
-                                    height: 10,
-                                  ),
-                                  Text(
-                                    'Tomar en cuenta para la foto',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 12,
-                                  ),
-                                  Text(
-                                    'Foto del daño',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  const SizedBox(
-                                    height: 20,
-                                  ),
-                                  const Text(
-                                      'Si su automóvil tiene algún daño debe incluir una fotografía'),
-                                  const SizedBox(
-                                    height: 32,
-                                  )
-                                ],
-                              ),
-                              extraActions: const [],
-                              hideActions: false,
-                            );
-                          },
-                          placeHolderAsset: 'assets/img/foto_dano.png',
-                          description:
-                              'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
-                        ),
-                        _PreviewFotos(
-                          imageFrontal: imageTablero,
-                          imageTrasera: imageDamage,
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  DotsIndicator(
-                    dotsCount: 3,
-                    position: currentPage.toInt(),
-                  ),
-                  const SizedBox(
-                    height: 12,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          style: ButtonStyle(
-                            elevation: MaterialStateProperty.all(0.0),
-                            backgroundColor: MaterialStateProperty.all(
-                              Theme.of(context).primaryColor,
-                            ),
-                            shape: MaterialStateProperty.all(
-                              RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                                side: const BorderSide(
-                                  width: 1.0,
-                                  color: Colors.white,
+                  body: SingleChildScrollView(
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 46,
+                      ),
+                      child: Column(
+                        children: [
+                          const SizedBox(
+                            height: 32,
+                          ),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 440,
+                            child: PageView(
+                              controller: _pageController,
+                              children: [
+                                SelectorFoto(
+                                  onTapImagen: () {
+                                    getImage("TABLERO");
+                                  },
+                                  imagen: imageTablero,
+                                  onTapInfo: () {
+                                    CustomDialog(
+                                      context: context,
+                                      iconColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      icon: const Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                      content: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            'Tomar en cuenta para la foto',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          Text(
+                                            'Foto del tablero',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          const Text(
+                                              'La foto debe mostrar todo el tablero del automóvil, asegurate de que se pueda ver la marca de la radio'),
+                                          const SizedBox(
+                                            height: 32,
+                                          )
+                                        ],
+                                      ),
+                                      extraActions: const [],
+                                      hideActions: false,
+                                    );
+                                  },
+                                  placeHolderAsset:
+                                      'assets/img/foto_tablero.png',
+                                  description:
+                                      'Se debe tomar la fotografía en un lugar iluminado y con el tablero encendido',
                                 ),
-                              ),
+                                SelectorFoto(
+                                  onTapImagen: () {
+                                    getImage("DAMAGE");
+                                  },
+                                  imagen: imageDamage,
+                                  onTapInfo: () {
+                                    CustomDialog(
+                                      context: context,
+                                      iconColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                      icon: const Icon(
+                                        Icons.camera_alt_outlined,
+                                        size: 40,
+                                        color: Colors.white,
+                                      ),
+                                      content: Column(
+                                        children: [
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
+                                          Text(
+                                            'Tomar en cuenta para la foto',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 12,
+                                          ),
+                                          Text(
+                                            'Foto del daño',
+                                            style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor,
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          const SizedBox(
+                                            height: 20,
+                                          ),
+                                          const Text(
+                                              'Si su automóvil tiene algún daño debe incluir una fotografía'),
+                                          const SizedBox(
+                                            height: 32,
+                                          )
+                                        ],
+                                      ),
+                                      extraActions: const [],
+                                      hideActions: false,
+                                    );
+                                  },
+                                  placeHolderAsset: 'assets/img/foto_dano.png',
+                                  description:
+                                      'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
+                                ),
+                                _PreviewFotos(
+                                  imageFrontal: imageTablero,
+                                  imageTrasera: imageDamage,
+                                )
+                              ],
                             ),
                           ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 10,
-                            ),
-                            child: const Text(
-                              'Continuar',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                          const SizedBox(
+                            height: 12,
                           ),
-                          onPressed: () async {
-                            if (_pageController.page == 2.0) {
-                              if (imageDamage != null && imageTablero != null) {
-                                final inspectionResponse =
-                                    await widget.inspectionController.update2(
-                                  damage: imageDamage!,
-                                  tablero: imageTablero!,
-                                  carId: widget.carController.carId,
-                                );
-
-                                if (inspectionResponse != null) {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => SignatureScreen(
-                                        carController: widget.carController,
-                                        inspectionController:
-                                            widget.inspectionController,
-                                        paqueteStock: widget.paqueteStock,
-                                        personalDataController:
-                                            widget.personalDataController,
+                          DotsIndicator(
+                            dotsCount: 3,
+                            position: currentPage.toInt(),
+                          ),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: ElevatedButton(
+                                  style: ButtonStyle(
+                                    elevation: WidgetStateProperty.all(0.0),
+                                    backgroundColor: WidgetStateProperty.all(
+                                      Theme.of(context).primaryColor,
+                                    ),
+                                    shape: WidgetStateProperty.all(
+                                      RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8),
+                                        side: const BorderSide(
+                                          width: 1.0,
+                                          color: Colors.white,
+                                        ),
                                       ),
                                     ),
-                                  );
-                                } else {
-                                  // TODO: Manejar Excepciones
-                                }
-                              } else {
-                                Fluttertoast.showToast(
-                                  msg: 'Debe subir las fotos adicionales',
-                                );
-                              }
-                            } else {
-                              _pageController.nextPage(
-                                duration: const Duration(milliseconds: 750),
-                                curve: Curves.linear,
-                              );
-                            }
-                          },
-                        ),
+                                  ),
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 10,
+                                    ),
+                                    child: const Text(
+                                      'Continuar',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  onPressed: () async {
+                                    if (_pageController.page == 2.0) {
+                                      if (imageDamage != null &&
+                                          imageTablero != null) {
+                                        _isLoadingNotifier.value = true;
+
+                                        final inspectionResponse = await widget
+                                            .inspectionController
+                                            .update2(
+                                          damage: imageDamage!,
+                                          tablero: imageTablero!,
+                                          carId: widget.carController.carId,
+                                        );
+
+                                        if (inspectionResponse != null) {
+                                          _isLoadingNotifier.value = false;
+
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => SignatureScreen(
+                                                carController:
+                                                    widget.carController,
+                                                inspectionController:
+                                                    widget.inspectionController,
+                                                paqueteStock:
+                                                    widget.paqueteStock,
+                                                personalDataController: widget
+                                                    .personalDataController,
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          _isLoadingNotifier.value = false;
+                                          Fluttertoast.showToast(
+                                            msg:
+                                                'Hubo un problema al subir las fotos adicionales',
+                                          );
+                                        }
+                                      } else {
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Debe subir las fotos adicionales',
+                                        );
+                                      }
+                                    } else {
+                                      _pageController.nextPage(
+                                        duration:
+                                            const Duration(milliseconds: 750),
+                                        curve: Curves.linear,
+                                      );
+                                    }
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                ],
-              ),
-            ),
-          ),
+                ),
+                if (isLoading)
+                  Container(
+                    color: AppColors.primary.withOpacity(0.2),
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  )
+              ],
+            );
+          },
         );
       },
     );

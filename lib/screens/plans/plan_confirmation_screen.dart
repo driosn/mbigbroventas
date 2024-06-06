@@ -103,7 +103,7 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
             height: 4,
           ),
           const Text(
-            'Personaliza tu seguro',
+            'Personaliza el seguro',
             style: TextStyle(
               color: Colors.white,
             ),
@@ -253,7 +253,7 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
                         children: [
                           const Expanded(
                               flex: 5,
-                              child: Text("Tu franquicia es:",
+                              child: Text("La franquicia es:",
                                   style: TextStyle(
                                       color: Color(0xff1D2766), fontSize: 14))),
                           IconButton(

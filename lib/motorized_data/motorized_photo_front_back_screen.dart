@@ -11,6 +11,7 @@ import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_dialog.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_left_right_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 import 'package:mibigbro_ventas_mobile/widgets/selector_foto.dart';
 
@@ -38,6 +39,7 @@ class _MotorizedPhotoFrontBackScreenState
 
   final _pageController = PageController();
   double currentPage = 0.0;
+  late ValueNotifier<bool> _isLoadingNotifier;
 
   //
   // Own Controllers
@@ -52,6 +54,8 @@ class _MotorizedPhotoFrontBackScreenState
         currentPage = _pageController.page ?? 0.0;
       });
     });
+
+    _isLoadingNotifier = ValueNotifier<bool>(false);
   }
 
   Future getImage(String tipoFoto) async {
@@ -100,236 +104,274 @@ class _MotorizedPhotoFrontBackScreenState
 
   @override
   Widget build(BuildContext context) {
-    return BigBroScaffold(
-      title: 'Datos del motorizado',
-      subtitle: 'Foto del automóvil',
-      subtitleStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 16,
-      ),
-      body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: 46,
-          ),
-          child: Column(
+    return ValueListenableBuilder<bool>(
+        valueListenable: _isLoadingNotifier,
+        builder: (context, isLoading, child) {
+          return Stack(
             children: [
-              const SizedBox(
-                height: 32,
-              ),
-              SizedBox(
-                width: double.infinity,
-                height: 440,
-                child: PageView(
-                  controller: _pageController,
-                  children: [
-                    SelectorFoto(
-                      onTapImagen: () {
-                        getImage("FRONTAL");
-                      },
-                      imagen: imageFrontal,
-                      onTapInfo: () {
-                        CustomDialog(
-                          context: context,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          icon: const Icon(
-                            Icons.camera_alt_outlined,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          content: Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Tomar en cuenta para la foto',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                'Foto frontal',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text(
-                                  'La foto delantera debe mostrar toda la parte delantera del vehículo y la placa'),
-                              const SizedBox(
-                                height: 32,
-                              )
-                            ],
-                          ),
-                          extraActions: const [],
-                          hideActions: false,
-                        );
-                      },
-                      placeHolderAsset: 'assets/img/foto_automovil.png',
-                      description:
-                          'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
-                    ),
-                    SelectorFoto(
-                      onTapImagen: () {
-                        getImage("TRASERA");
-                      },
-                      imagen: imageTrasera,
-                      onTapInfo: () {
-                        CustomDialog(
-                          context: context,
-                          iconColor: Theme.of(context).colorScheme.secondary,
-                          icon: const Icon(
-                            Icons.camera_alt_outlined,
-                            size: 40,
-                            color: Colors.white,
-                          ),
-                          content: Column(
-                            children: [
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Text(
-                                'Tomar en cuenta para la foto',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 12,
-                              ),
-                              Text(
-                                'Foto posterior',
-                                style: TextStyle(
-                                  color: Theme.of(context).primaryColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(
-                                height: 20,
-                              ),
-                              const Text(
-                                  'La foto debe mostrar toda la parte posterior del vehículo y placa visible'),
-                              const SizedBox(
-                                height: 32,
-                              )
-                            ],
-                          ),
-                          extraActions: const [],
-                          hideActions: false,
-                        );
-                      },
-                      placeHolderAsset: 'assets/img/foto_automovil.png',
-                      description:
-                          'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
-                    ),
-                    _PreviewFotos(
-                      imageFrontal: imageFrontal,
-                      imageTrasera: imageTrasera,
-                    )
-                  ],
+              BigBroScaffold(
+                title: 'Datos del motorizado',
+                subtitle: 'Foto del automóvil',
+                subtitleStyle: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
                 ),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              DotsIndicator(
-                dotsCount: 3,
-                position: currentPage.toInt(),
-              ),
-              const SizedBox(
-                height: 12,
-              ),
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton(
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(0.0),
-                        backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).primaryColor,
+                body: SingleChildScrollView(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 46,
+                    ),
+                    child: Column(
+                      children: [
+                        const SizedBox(
+                          height: 32,
                         ),
-                        shape: MaterialStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                            side: const BorderSide(
-                              width: 1.0,
-                              color: Colors.white,
-                            ),
+                        SizedBox(
+                          width: double.infinity,
+                          height: 440,
+                          child: PageView(
+                            controller: _pageController,
+                            children: [
+                              SelectorFoto(
+                                onTapImagen: () {
+                                  getImage("FRONTAL");
+                                },
+                                imagen: imageFrontal,
+                                onTapInfo: () {
+                                  CustomDialog(
+                                    context: context,
+                                    iconColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                    content: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Tomar en cuenta para la foto',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          'Foto frontal',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        const Text(
+                                            'La foto delantera debe mostrar toda la parte delantera del vehículo y la placa'),
+                                        const SizedBox(
+                                          height: 32,
+                                        )
+                                      ],
+                                    ),
+                                    extraActions: const [],
+                                    hideActions: false,
+                                  );
+                                },
+                                placeHolderAsset:
+                                    'assets/img/foto_automovil.png',
+                                description:
+                                    'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
+                              ),
+                              SelectorFoto(
+                                onTapImagen: () {
+                                  getImage("TRASERA");
+                                },
+                                imagen: imageTrasera,
+                                onTapInfo: () {
+                                  CustomDialog(
+                                    context: context,
+                                    iconColor:
+                                        Theme.of(context).colorScheme.secondary,
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 40,
+                                      color: Colors.white,
+                                    ),
+                                    content: Column(
+                                      children: [
+                                        const SizedBox(
+                                          height: 10,
+                                        ),
+                                        Text(
+                                          'Tomar en cuenta para la foto',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 12,
+                                        ),
+                                        Text(
+                                          'Foto posterior',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const SizedBox(
+                                          height: 20,
+                                        ),
+                                        const Text(
+                                            'La foto debe mostrar toda la parte posterior del vehículo y placa visible'),
+                                        const SizedBox(
+                                          height: 32,
+                                        )
+                                      ],
+                                    ),
+                                    extraActions: const [],
+                                    hideActions: false,
+                                  );
+                                },
+                                placeHolderAsset:
+                                    'assets/img/foto_automovil.png',
+                                description:
+                                    'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
+                              ),
+                              _PreviewFotos(
+                                imageFrontal: imageFrontal,
+                                imageTrasera: imageTrasera,
+                              )
+                            ],
                           ),
                         ),
-                      ),
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: 10,
+                        const SizedBox(
+                          height: 12,
                         ),
-                        child: const Text(
-                          'Continuar',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w600,
-                          ),
+                        DotsIndicator(
+                          dotsCount: 3,
+                          position: currentPage.toInt(),
                         ),
-                      ),
-                      onPressed: () async {
-                        if (_pageController.page == 2.0) {
-                          if (imageFrontal != null && imageTrasera != null) {
-                            final inspectionResponse =
-                                await inspectionController.createInspection(
-                              frontalPhoto: imageFrontal!,
-                              backPhoto: imageTrasera!,
-                              carId: widget.carController.carId,
-                            );
-
-                            if (inspectionResponse != null) {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => MotorizedPhotoLeftRightScreen(
-                                    carController: widget.carController,
-                                    inspectionController: inspectionController,
-                                    paqueteStock: widget.paqueteStock,
-                                    personalDataController:
-                                        widget.personalDataController,
+                        const SizedBox(
+                          height: 12,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: ElevatedButton(
+                                style: ButtonStyle(
+                                  elevation: WidgetStateProperty.all(0.0),
+                                  backgroundColor: WidgetStateProperty.all(
+                                    Theme.of(context).primaryColor,
+                                  ),
+                                  shape: WidgetStateProperty.all(
+                                    RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8),
+                                      side: const BorderSide(
+                                        width: 1.0,
+                                        color: Colors.white,
+                                      ),
+                                    ),
                                   ),
                                 ),
-                              );
-                            } else {
-                              // TODO: Manejar Excepciones
-                            }
-                          } else {
-                            Fluttertoast.showToast(
-                              msg: 'Debe subir las fotos frontal y trasera',
-                            );
-                          }
-                        } else {
-                          _pageController.nextPage(
-                            duration: const Duration(milliseconds: 750),
-                            curve: Curves.linear,
-                          );
-                        }
-                      },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10,
+                                  ),
+                                  child: const Text(
+                                    'Continuar',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                                onPressed: () async {
+                                  if (_pageController.page == 2.0) {
+                                    if (imageFrontal != null &&
+                                        imageTrasera != null) {
+                                      _isLoadingNotifier.value = true;
+
+                                      final inspectionResponse =
+                                          await inspectionController
+                                              .createInspection(
+                                        frontalPhoto: imageFrontal!,
+                                        backPhoto: imageTrasera!,
+                                        carId: widget.carController.carId,
+                                      );
+
+                                      if (inspectionResponse != null) {
+                                        _isLoadingNotifier.value = false;
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                MotorizedPhotoLeftRightScreen(
+                                              carController:
+                                                  widget.carController,
+                                              inspectionController:
+                                                  inspectionController,
+                                              paqueteStock: widget.paqueteStock,
+                                              personalDataController:
+                                                  widget.personalDataController,
+                                            ),
+                                          ),
+                                        );
+                                      } else {
+                                        _isLoadingNotifier.value = false;
+
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Hubo un problema subiendo fotos frontal y trasera',
+                                        );
+                                      }
+                                    } else {
+                                      Fluttertoast.showToast(
+                                        msg:
+                                            'Debe subir las fotos frontal y trasera',
+                                      );
+                                    }
+                                  } else {
+                                    _pageController.nextPage(
+                                      duration:
+                                          const Duration(milliseconds: 750),
+                                      curve: Curves.linear,
+                                    );
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
-                ],
+                ),
               ),
+              if (isLoading)
+                Container(
+                  color: AppColors.primary.withOpacity(0.20),
+                  child: const Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                )
             ],
-          ),
-        ),
-      ),
-    );
+          );
+        });
   }
 }
 

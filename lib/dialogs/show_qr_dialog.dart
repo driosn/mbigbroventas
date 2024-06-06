@@ -10,6 +10,7 @@ import 'package:share_plus/share_plus.dart';
 
 showQRDialog(
   BuildContext context, {
+  required int insuranceId,
   required int amount,
   required VoidCallback onFinish,
 }) {
@@ -54,7 +55,7 @@ showQRDialog(
               ),
               child: FutureBuilder(
                 future: BigBroService().generateQR(
-                  "80",
+                  insuranceId.toString(),
                   amount.toString(),
                 ),
                 builder: (context, snapshot) {
@@ -103,7 +104,7 @@ showQRDialog(
                         '$temporaryDir/${DateTime.now().millisecondsSinceEpoch}.pdf');
                     // TODO: IMprove qr generation
                     final qrString = await BigBroService().generateQR(
-                      "80",
+                      insuranceId.toString(),
                       amount.toString(),
                     );
                     final imageBytes = base64Decode(qrString);

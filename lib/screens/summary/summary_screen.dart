@@ -558,7 +558,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 content: Column(
                                                   children: [
                                                     const Text(
-                                                      'Tu seguro ha sido preaprobado',
+                                                      'El seguro ha sido preaprobado',
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -571,7 +571,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                       height: 8,
                                                     ),
                                                     const Text(
-                                                      'Antes de continuar con el pago tus datos serán verificados.',
+                                                      'Antes de continuar con el pago, los datos serán verificados.',
                                                       textAlign:
                                                           TextAlign.center,
                                                       style: TextStyle(
@@ -600,6 +600,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                       onPressed: () {
                                                         showQRDialog(
                                                           context,
+                                                          insuranceId: policyId,
                                                           amount: widget
                                                               .paqueteStock
                                                               .primebs,
@@ -668,14 +669,14 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         height: 8,
                                       ),
                                       Text(
-                                        'Estas de acuerdo con los datos de tu seguro?',
+                                        'Estas de acuerdo con los datos del seguro?',
                                         textAlign: TextAlign.center,
                                       ),
                                       SizedBox(
                                         height: 12,
                                       ),
                                       Text(
-                                        'En caso de contar con un error de información en los datos declarados tu póliza será anulada',
+                                        'En caso de contar con un error de información en los datos declarados, la póliza será anulada',
                                         textAlign: TextAlign.center,
                                       ),
                                       SizedBox(
@@ -731,7 +732,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
           content: const SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('¿Está usted de acuerdo con los datos de tu seguro?',
+                Text('¿Está usted de acuerdo con los datos del seguro?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Color(0xff1D2766),
@@ -741,7 +742,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         fontWeight: FontWeight.w300)),
                 SizedBox(height: 15),
                 Text(
-                    'En caso de contar con un error de información en tus declarados tu póliza será anulada',
+                    'En caso de contar con un error de información en tus declarados, la póliza será anulada',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Color(0xff1D2766),
@@ -790,7 +791,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
             child: ListBody(
               children: <Widget>[
                 Text(
-                    'Usted debe descargar y leer el slip de cotización antes de poder continuar',
+                    'Usted debe descargar el slip de cotización antes de poder continuar',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                         color: Color(0xff1D2766),
