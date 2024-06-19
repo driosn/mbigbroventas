@@ -5,7 +5,6 @@ import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
 import 'package:mibigbro_ventas_mobile/screens/plans/plan_confirmation_screen.dart';
-import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 
 class PlansScreen extends StatelessWidget {
@@ -131,23 +130,23 @@ class _PaquetesState extends State<Paquetes> {
             }
           }
 
-          if (existsZeroPlan) {
-            return const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: 32,
-                ),
-                child: Text(
-                  'Hubo un problema obteniendo los planes, contáctese con su administrador',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ),
-            );
-          }
+          // if (existsZeroPlan) {
+          //   return const Center(
+          //     child: Padding(
+          //       padding: EdgeInsets.symmetric(
+          //         horizontal: 32,
+          //       ),
+          //       child: Text(
+          //         'Hubo un problema obteniendo los planes, contáctese con su administrador',
+          //         textAlign: TextAlign.center,
+          //         style: TextStyle(
+          //           fontSize: 20,
+          //           color: AppColors.primary,
+          //         ),
+          //       ),
+          //     ),
+          //   );
+          // }
 
           return Scaffold(
             body: Column(

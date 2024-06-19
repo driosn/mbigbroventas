@@ -3,10 +3,12 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
 import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
 import 'package:mibigbro_ventas_mobile/screens/car_data/car_data_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/extensions.dart';
 import 'package:mibigbro_ventas_mobile/utils/formatters/formatters.dart';
 import 'package:mibigbro_ventas_mobile/widgets/custom_date_picker.dart';
@@ -32,6 +34,7 @@ class _PersonalDataFoundClientScreen
     extends State<PersonalDataFoundClientScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final ScrollController _scrollController = ScrollController();
+  late ValueNotifier<bool> _isLoadingNotifier;
 
   //
   // Own Controller
@@ -42,6 +45,8 @@ class _PersonalDataFoundClientScreen
   @override
   void initState() {
     super.initState();
+
+    _isLoadingNotifier = ValueNotifier<bool>(false);
 
     client = widget.client;
 
@@ -228,639 +233,697 @@ class _PersonalDataFoundClientScreen
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldKey,
-      body: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          controller: _scrollController,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                Stack(
-                  children: [
-                    Column(
-                      children: [
-                        Container(
-                          height: 190,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).primaryColor,
-                            borderRadius: const BorderRadius.only(
-                              bottomLeft: Radius.circular(20),
-                              bottomRight: Radius.circular(20),
-                            ),
-                          ),
-                          padding: const EdgeInsets.only(
-                            top: kToolbarHeight,
-                            left: 16,
-                          ),
-                          child: Align(
-                            alignment: Alignment.topLeft,
-                            child: Row(
+    return ValueListenableBuilder<bool>(
+      valueListenable: _isLoadingNotifier,
+      builder: (context, isLoading, child) {
+        return Stack(
+          children: [
+            Scaffold(
+              key: _scaffoldKey,
+              body: Form(
+                key: _formKey,
+                child: SingleChildScrollView(
+                  controller: _scrollController,
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        Stack(
+                          children: [
+                            Column(
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.arrow_back_ios),
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                  onPressed: () => Navigator.pop(context),
-                                ),
-                                const Text(
-                                  'Datos Personales',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 20,
+                                Container(
+                                  height: 190,
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).primaryColor,
+                                    borderRadius: const BorderRadius.only(
+                                      bottomLeft: Radius.circular(20),
+                                      bottomRight: Radius.circular(20),
+                                    ),
+                                  ),
+                                  padding: const EdgeInsets.only(
+                                    top: kToolbarHeight,
+                                    left: 16,
+                                  ),
+                                  child: Align(
+                                    alignment: Alignment.topLeft,
+                                    child: Row(
+                                      children: [
+                                        IconButton(
+                                          icon:
+                                              const Icon(Icons.arrow_back_ios),
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          onPressed: () =>
+                                              Navigator.pop(context),
+                                        ),
+                                        const Text(
+                                          'Datos Personales',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
+                                Container(
+                                  height: 50,
+                                  width: double.infinity,
+                                  decoration: const BoxDecoration(
+                                    color: Colors.white,
+                                  ),
+                                )
                               ],
                             ),
-                          ),
+                          ],
                         ),
-                        Container(
-                          height: 50,
-                          width: double.infinity,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 34,
                           ),
+                          child: ListenableBuilder(
+                              listenable: personalDataController,
+                              builder: (context, child) {
+                                if (personalDataController.getExtraDataStatus ==
+                                    BigBroStatus.loading) {
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                                }
+
+                                if (personalDataController.getExtraDataStatus ==
+                                    BigBroStatus.failure) {
+                                  return const Center(
+                                    child: Text(
+                                      'Hubo un problema al cargar los datos de formulario',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  );
+                                }
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _nombre,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Nombre',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          _scrollController.animateTo(0.0,
+                                              duration: const Duration(
+                                                  milliseconds: 600),
+                                              curve: Curves.linear);
+                                          return 'Ingrese sus nombres';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _apellidoPaterno,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Apellido paterno',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          _scrollController.animateTo(0.0,
+                                              duration: const Duration(
+                                                  milliseconds: 600),
+                                              curve: Curves.linear);
+                                          return 'Ingrese su apellido paterno';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _apellidoMaterno,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Apellido materno',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          _scrollController.animateTo(0.0,
+                                              duration: const Duration(
+                                                  milliseconds: 600),
+                                              curve: Curves.linear);
+                                          return 'Ingrese su apellido materno';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    TextFormField(
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.deny(''),
+                                      ],
+                                      readOnly: true,
+                                      enabled: false,
+                                      controller: _nacimientoController,
+                                      decoration: const InputDecoration(
+                                        hintStyle:
+                                            TextStyle(color: Colors.black45),
+                                        errorStyle: TextStyle(
+                                          color: Colors.redAccent,
+                                        ),
+                                        suffixIcon: Icon(Icons.event_note),
+                                        labelText: 'Fecha de nacimiento',
+                                      ),
+                                      onTap: () async {
+                                        final fechaNacimiento =
+                                            await CustomDatePicker.show(
+                                          context: context,
+                                          firstDate: DateTime(1940, 0, 0),
+                                          initialDate: _fechaNacimiento ??
+                                              DateTime(
+                                                  DateTime.now().year - 18,
+                                                  DateTime.now().month,
+                                                  DateTime.now().day),
+                                          lastDate: DateTime(
+                                              DateTime.now().year - 18,
+                                              DateTime.now().month,
+                                              DateTime.now().day),
+                                        );
+
+                                        if (fechaNacimiento != null) {
+                                          _fechaNacimiento = fechaNacimiento;
+                                          _nacimientoController.text =
+                                              '${_fechaNacimiento?.day}/${_fechaNacimiento?.month}/${_fechaNacimiento?.year}';
+                                        }
+                                      },
+                                      validator: (String? value) {
+                                        final date = _fechaNacimiento;
+                                        int yearDiff = 0;
+                                        if (date != null) {
+                                          DateTime today = DateTime.now();
+                                          yearDiff = today.year - date.year;
+                                        }
+
+                                        if (date == null) {
+                                          return 'Ingrese la fecha de nacimiento';
+                                        }
+
+                                        if (yearDiff < 18) {
+                                          return 'Debe tener más de 18 años';
+                                        }
+
+                                        if (yearDiff > 75) {
+                                          return 'Debe tener un maximo de 75 años';
+                                        }
+
+                                        return null;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _email,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Correo electrónico',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return 'Ingrese su correo';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    const SizedBox(
+                                      height: 6,
+                                    ),
+                                    const Text(
+                                      'Género',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    DropdownButtonFormField(
+                                      hint: const Text('Género'),
+                                      items: generoItems,
+                                      value: _genero,
+                                      borderRadius: BorderRadius.circular(16),
+                                      icon: Transform.rotate(
+                                        angle: pi * 1.5,
+                                        child: const Icon(Icons.chevron_left),
+                                      ),
+                                      validator: (dynamic value) =>
+                                          value == "NN" ? "NN" : null,
+                                      onChanged: null,
+                                      selectedItemBuilder:
+                                          (BuildContext context) {
+                                        return generoItems2;
+                                      },
+                                      isExpanded: true,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    const Text(
+                                      'Tipo de documento',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    DropdownButtonFormField(
+                                      hint: const Text('Tipo de documento'),
+                                      items: [
+                                        "CI",
+                                        "PASAPORTE",
+                                        "LICENCIA",
+                                        "OTRO"
+                                      ]
+                                          .map((label) => DropdownMenuItem(
+                                                value: label,
+                                                child: Center(
+                                                  child: Text(
+                                                    label == 'CI'
+                                                        ? 'CÉDULA DE IDENTIDAD'
+                                                        : label.toString(),
+                                                    style:
+                                                        dropdownItemTextStyle,
+                                                  ),
+                                                ),
+                                              ))
+                                          .toList(),
+                                      value: _tipoDocumento,
+                                      validator: (dynamic value) =>
+                                          value == null ? 'CI' : null,
+                                      onChanged: null,
+                                      selectedItemBuilder: (context) => [
+                                        "CI",
+                                        "PASAPORTE",
+                                        "LICENCIA",
+                                        "OTRO"
+                                      ]
+                                          .map((label) => DropdownMenuItem(
+                                                value: label,
+                                                child: Text(
+                                                  label == 'CI'
+                                                      ? 'CÉDULA DE IDENTIDAD'
+                                                      : label.toString(),
+                                                ),
+                                              ))
+                                          .toList(),
+                                      isExpanded: true,
+                                    ),
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _nroDocumento,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Número de documento:',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return 'Ingrese el número de documento';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    DropdownButtonFormField<String>(
+                                      decoration: const InputDecoration(
+                                        hintStyle:
+                                            TextStyle(color: Colors.black45),
+                                        errorStyle:
+                                            TextStyle(color: Colors.redAccent),
+                                        labelText: 'Extensión',
+                                      ),
+                                      hint: const Text('Extensión'),
+                                      items: personalDataController
+                                          .tipoDocumentos
+                                          .map((tp) {
+                                        return DropdownMenuItem(
+                                          value: tp.abreviacion,
+                                          child: Text(
+                                            tp.abreviacion == 'PO'
+                                                ? 'POTOSÍ'
+                                                : tp.descripcion,
+                                            style: tp.id == 0
+                                                ? titleStyle
+                                                : dropdownItemTextStyle,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      borderRadius: BorderRadius.circular(16),
+                                      selectedItemBuilder: (context) =>
+                                          personalDataController.tipoDocumentos
+                                              .map((tp) {
+                                        return DropdownMenuItem(
+                                          value: tp.id,
+                                          child: Text(
+                                            tp.abreviacion == 'PO'
+                                                ? 'POTOSÍ'
+                                                : tp.descripcion,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      value: _extDocumento,
+                                      validator: (dynamic value) =>
+                                          value == 'NN'
+                                              ? 'Elija una extensión'
+                                              : null,
+                                      onChanged: null,
+                                      isExpanded: true,
+                                    ),
+                                    DropdownButtonFormField<int>(
+                                      decoration: const InputDecoration(
+                                        hintStyle:
+                                            TextStyle(color: Colors.black45),
+                                        errorStyle:
+                                            TextStyle(color: Colors.redAccent),
+                                        labelText: 'Pais de residencia',
+                                      ),
+                                      hint: const Text('Pais de residencia'),
+                                      items: personalDataController.paises
+                                          .map((pais) => DropdownMenuItem(
+                                                value: pais.id,
+                                                child: Text(pais.nombrePais),
+                                              ))
+                                          .toList(),
+                                      value: _pais,
+                                      validator: (dynamic value) =>
+                                          value == 0 ? 'Elija un país' : null,
+                                      onChanged: null,
+                                      isExpanded: true,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    TextFormField(
+                                      enabled: false,
+                                      controller: _nacionalidad,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Nacionalidad',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return 'Ingrese su nacionalidad';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    DropdownButtonFormField(
+                                      decoration: const InputDecoration(
+                                        hintStyle:
+                                            TextStyle(color: Colors.black45),
+                                        errorStyle:
+                                            TextStyle(color: Colors.redAccent),
+                                        labelText: 'Ciudad de residencia',
+                                      ),
+                                      hint: const Text('Ciudad de residencia'),
+                                      items: personalDataController.ciudades
+                                          .map((ciudad) {
+                                        return DropdownMenuItem(
+                                          value: ciudad.id,
+                                          child: Text(
+                                            ciudad.nombreCiudad.toUpperCase(),
+                                            style: ciudad.id == 0
+                                                ? titleStyle
+                                                : dropdownItemTextStyle,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      borderRadius: BorderRadius.circular(16),
+                                      selectedItemBuilder: (context) =>
+                                          personalDataController.ciudades
+                                              .map((ciudad) {
+                                        return DropdownMenuItem(
+                                          value: ciudad.id,
+                                          child: Text(
+                                            ciudad.nombreCiudad,
+                                          ),
+                                        );
+                                      }).toList(),
+                                      value: _ciudad,
+                                      validator: (dynamic value) => value == 0
+                                          ? 'Elija una ciudad'
+                                          : null,
+                                      onChanged: null,
+                                      isExpanded: true,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    const Text(
+                                      'Estado civil',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    DropdownButtonFormField(
+                                      hint: const Text('Estado civil'),
+                                      items: estadocivilItems,
+                                      value: _estadoCivil,
+                                      borderRadius: BorderRadius.circular(16),
+                                      validator: (dynamic value) =>
+                                          value == "NN" ? 'NN' : null,
+                                      onChanged: null,
+                                      selectedItemBuilder: (context) =>
+                                          estadocivilItems2,
+                                      isExpanded: true,
+                                    ),
+                                    TextFormField(
+                                      controller: _celular,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                      ],
+                                      decoration: const InputDecoration(
+                                          labelText: 'Número de celular',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          _scrollController.animateTo(0.0,
+                                              duration: const Duration(
+                                                  milliseconds: 600),
+                                              curve: Curves.linear);
+                                          return 'Ingrese número de celular';
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      controller: _direccion,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Dirección',
+                                      ),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return 'Ingrese su dirección';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    const SizedBox(
+                                      height: 4,
+                                    ),
+                                    const Text(
+                                      'Profesión',
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black54,
+                                      ),
+                                    ),
+                                    SelectorProfesion(
+                                      ocupacionInicial: _ocupacion,
+                                      profesiones:
+                                          personalDataController.profesiones,
+                                      onChanged: (profesion) {
+                                        _ocupacion = profesion.idAlianza;
+                                      },
+                                    ),
+                                    TextFormField(
+                                      controller: _actividad,
+                                      decoration: const InputDecoration(
+                                          labelText: 'Actividad comercial:',
+                                          enabledBorder: UnderlineInputBorder(
+                                            borderSide: BorderSide(
+                                              color: Color(0xff1D2766),
+                                            ),
+                                          )),
+                                      validator: (String? value) {
+                                        if (value!.isEmpty) {
+                                          return 'Ingrese su actividad';
+                                        }
+                                        return null;
+                                      },
+                                      inputFormatters: [
+                                        UpperCaseTextFormatter(),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 24,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceAround,
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            if (_formKey.currentState!
+                                                .validate()) {
+                                              _isLoadingNotifier.value = true;
+
+                                              final clientResponse =
+                                                  await personalDataController
+                                                      .createClient(
+                                                name: _nombre.text,
+                                                lastName: _apellidoPaterno.text,
+                                                motherLastName:
+                                                    _apellidoMaterno.text,
+                                                cellPhone: _celular.text,
+                                                birthdate: (_fechaNacimiento ??
+                                                        DateTime.now())
+                                                    .dashedDate,
+                                                gender: _genero!,
+                                                civilStatus: _estadoCivil,
+                                                documentType: _tipoDocumento!,
+                                                dni: _nroDocumento.text,
+                                                extension: _extDocumento,
+                                                email: _email.text,
+                                                country: _pais.toString(),
+                                                nationality: _nacionalidad.text,
+                                                city: _ciudad.toString(),
+                                                address: _direccion.text,
+                                                profession:
+                                                    _ocupacion.toString(),
+                                                comercialActivity:
+                                                    _actividad.text,
+                                              );
+
+                                              _isLoadingNotifier.value = false;
+
+                                              if (clientResponse != null) {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        CarDataScreen(
+                                                      personalDataController:
+                                                          personalDataController,
+                                                    ),
+                                                  ),
+                                                );
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Hubo un problema al actualizar los valores',
+                                                );
+                                              }
+                                            }
+
+                                            // personalDataController
+                                            // .setClientData(client);
+                                            // Navigator.push(
+                                            // context,
+                                            // MaterialPageRoute(
+                                            // builder: (_) => CarDataScreen(
+                                            // personalDataController:
+                                            // personalDataController,
+                                            // ),
+                                            // ),
+                                            // );
+                                          },
+                                          child: const Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 24,
+                                              vertical: 12,
+                                            ),
+                                            child: Text(
+                                              "Siguiente",
+                                              style: TextStyle(
+                                                fontSize: 14.0,
+                                                fontWeight: FontWeight.normal,
+                                                color: Colors.white,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(
+                                      height: 24,
+                                    )
+                                  ],
+                                );
+                              }),
                         )
                       ],
                     ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 34,
                   ),
-                  child: ListenableBuilder(
-                      listenable: personalDataController,
-                      builder: (context, child) {
-                        if (personalDataController.getExtraDataStatus ==
-                            BigBroStatus.loading) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
-                        }
-
-                        if (personalDataController.getExtraDataStatus ==
-                            BigBroStatus.failure) {
-                          return const Center(
-                            child: Text(
-                              'Hubo un problema al cargar los datos de formulario',
-                              textAlign: TextAlign.center,
-                            ),
-                          );
-                        }
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            TextFormField(
-                              enabled: false,
-                              controller: _nombre,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nombre',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  _scrollController.animateTo(0.0,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.linear);
-                                  return 'Ingrese sus nombres';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            TextFormField(
-                              enabled: false,
-                              controller: _apellidoPaterno,
-                              decoration: const InputDecoration(
-                                  labelText: 'Apellido paterno',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  _scrollController.animateTo(0.0,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.linear);
-                                  return 'Ingrese su apellido paterno';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            TextFormField(
-                              enabled: false,
-                              controller: _apellidoMaterno,
-                              decoration: const InputDecoration(
-                                  labelText: 'Apellido materno',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  _scrollController.animateTo(0.0,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.linear);
-                                  return 'Ingrese su apellido materno';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            TextFormField(
-                              inputFormatters: [
-                                FilteringTextInputFormatter.deny(''),
-                              ],
-                              readOnly: true,
-                              enabled: false,
-                              controller: _nacimientoController,
-                              decoration: const InputDecoration(
-                                hintStyle: TextStyle(color: Colors.black45),
-                                errorStyle: TextStyle(
-                                  color: Colors.redAccent,
-                                ),
-                                suffixIcon: Icon(Icons.event_note),
-                                labelText: 'Fecha de nacimiento',
-                              ),
-                              onTap: () async {
-                                final fechaNacimiento =
-                                    await CustomDatePicker.show(
-                                  context: context,
-                                  firstDate: DateTime(1940, 0, 0),
-                                  initialDate: _fechaNacimiento ??
-                                      DateTime(
-                                          DateTime.now().year - 18,
-                                          DateTime.now().month,
-                                          DateTime.now().day),
-                                  lastDate: DateTime(DateTime.now().year - 18,
-                                      DateTime.now().month, DateTime.now().day),
-                                );
-
-                                if (fechaNacimiento != null) {
-                                  _fechaNacimiento = fechaNacimiento;
-                                  _nacimientoController.text =
-                                      '${_fechaNacimiento?.day}/${_fechaNacimiento?.month}/${_fechaNacimiento?.year}';
-                                }
-                              },
-                              validator: (String? value) {
-                                final date = _fechaNacimiento;
-                                int yearDiff = 0;
-                                if (date != null) {
-                                  DateTime today = DateTime.now();
-                                  yearDiff = today.year - date.year;
-                                }
-
-                                if (date == null) {
-                                  return 'Ingrese la fecha de nacimiento';
-                                }
-
-                                if (yearDiff < 18) {
-                                  return 'Debe tener más de 18 años';
-                                }
-
-                                if (yearDiff > 75) {
-                                  return 'Debe tener un maximo de 75 años';
-                                }
-
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              enabled: false,
-                              controller: _email,
-                              decoration: const InputDecoration(
-                                  labelText: 'Correo electrónico',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese su correo';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(
-                              height: 6,
-                            ),
-                            const Text(
-                              'Género',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            DropdownButtonFormField(
-                              hint: const Text('Género'),
-                              items: generoItems,
-                              value: _genero,
-                              borderRadius: BorderRadius.circular(16),
-                              icon: Transform.rotate(
-                                angle: pi * 1.5,
-                                child: const Icon(Icons.chevron_left),
-                              ),
-                              validator: (dynamic value) =>
-                                  value == "NN" ? "NN" : null,
-                              onChanged: null,
-                              selectedItemBuilder: (BuildContext context) {
-                                return generoItems2;
-                              },
-                              isExpanded: true,
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const Text(
-                              'Tipo de documento',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            DropdownButtonFormField(
-                              hint: const Text('Tipo de documento'),
-                              items: ["CI", "PASAPORTE", "LICENCIA", "OTRO"]
-                                  .map((label) => DropdownMenuItem(
-                                        value: label,
-                                        child: Center(
-                                          child: Text(
-                                            label == 'CI'
-                                                ? 'CÉDULA DE IDENTIDAD'
-                                                : label.toString(),
-                                            style: dropdownItemTextStyle,
-                                          ),
-                                        ),
-                                      ))
-                                  .toList(),
-                              value: _tipoDocumento,
-                              validator: (dynamic value) =>
-                                  value == null ? 'CI' : null,
-                              onChanged: null,
-                              selectedItemBuilder: (context) =>
-                                  ["CI", "PASAPORTE", "LICENCIA", "OTRO"]
-                                      .map((label) => DropdownMenuItem(
-                                            value: label,
-                                            child: Text(
-                                              label == 'CI'
-                                                  ? 'CÉDULA DE IDENTIDAD'
-                                                  : label.toString(),
-                                            ),
-                                          ))
-                                      .toList(),
-                              isExpanded: true,
-                            ),
-                            TextFormField(
-                              enabled: false,
-                              controller: _nroDocumento,
-                              decoration: const InputDecoration(
-                                  labelText: 'Número de documento:',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese el número de documento';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            DropdownButtonFormField<String>(
-                              decoration: const InputDecoration(
-                                hintStyle: TextStyle(color: Colors.black45),
-                                errorStyle: TextStyle(color: Colors.redAccent),
-                                labelText: 'Extensión',
-                              ),
-                              hint: const Text('Extensión'),
-                              items: personalDataController.tipoDocumentos
-                                  .map((tp) {
-                                return DropdownMenuItem(
-                                  value: tp.abreviacion,
-                                  child: Text(
-                                    tp.abreviacion == 'PO'
-                                        ? 'POTOSÍ'
-                                        : tp.descripcion,
-                                    style: tp.id == 0
-                                        ? titleStyle
-                                        : dropdownItemTextStyle,
-                                  ),
-                                );
-                              }).toList(),
-                              borderRadius: BorderRadius.circular(16),
-                              selectedItemBuilder: (context) =>
-                                  personalDataController.tipoDocumentos
-                                      .map((tp) {
-                                return DropdownMenuItem(
-                                  value: tp.id,
-                                  child: Text(
-                                    tp.abreviacion == 'PO'
-                                        ? 'POTOSÍ'
-                                        : tp.descripcion,
-                                  ),
-                                );
-                              }).toList(),
-                              value: _extDocumento,
-                              validator: (dynamic value) =>
-                                  value == 'NN' ? 'Elija una extensión' : null,
-                              onChanged: null,
-                              isExpanded: true,
-                            ),
-                            DropdownButtonFormField<int>(
-                              decoration: const InputDecoration(
-                                hintStyle: TextStyle(color: Colors.black45),
-                                errorStyle: TextStyle(color: Colors.redAccent),
-                                labelText: 'Pais de residencia',
-                              ),
-                              hint: const Text('Pais de residencia'),
-                              items: personalDataController.paises
-                                  .map((pais) => DropdownMenuItem(
-                                        value: pais.id,
-                                        child: Text(pais.nombrePais),
-                                      ))
-                                  .toList(),
-                              value: _pais,
-                              validator: (dynamic value) =>
-                                  value == 0 ? 'Elija un país' : null,
-                              onChanged: null,
-                              isExpanded: true,
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            TextFormField(
-                              enabled: false,
-                              controller: _nacionalidad,
-                              decoration: const InputDecoration(
-                                  labelText: 'Nacionalidad',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese su nacionalidad';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            DropdownButtonFormField(
-                              decoration: const InputDecoration(
-                                hintStyle: TextStyle(color: Colors.black45),
-                                errorStyle: TextStyle(color: Colors.redAccent),
-                                labelText: 'Ciudad de residencia',
-                              ),
-                              hint: const Text('Ciudad de residencia'),
-                              items:
-                                  personalDataController.ciudades.map((ciudad) {
-                                return DropdownMenuItem(
-                                  value: ciudad.id,
-                                  child: Text(
-                                    ciudad.nombreCiudad.toUpperCase(),
-                                    style: ciudad.id == 0
-                                        ? titleStyle
-                                        : dropdownItemTextStyle,
-                                  ),
-                                );
-                              }).toList(),
-                              borderRadius: BorderRadius.circular(16),
-                              selectedItemBuilder: (context) =>
-                                  personalDataController.ciudades.map((ciudad) {
-                                return DropdownMenuItem(
-                                  value: ciudad.id,
-                                  child: Text(
-                                    ciudad.nombreCiudad,
-                                  ),
-                                );
-                              }).toList(),
-                              value: _ciudad,
-                              validator: (dynamic value) =>
-                                  value == 0 ? 'Elija una ciudad' : null,
-                              onChanged: null,
-                              isExpanded: true,
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const Text(
-                              'Estado civil',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            DropdownButtonFormField(
-                              hint: const Text('Estado civil'),
-                              items: estadocivilItems,
-                              value: _estadoCivil,
-                              borderRadius: BorderRadius.circular(16),
-                              validator: (dynamic value) =>
-                                  value == "NN" ? 'NN' : null,
-                              onChanged: null,
-                              selectedItemBuilder: (context) =>
-                                  estadocivilItems2,
-                              isExpanded: true,
-                            ),
-                            TextFormField(
-                              controller: _celular,
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              decoration: const InputDecoration(
-                                  labelText: 'Número de celular',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  _scrollController.animateTo(0.0,
-                                      duration:
-                                          const Duration(milliseconds: 600),
-                                      curve: Curves.linear);
-                                  return 'Ingrese número de celular';
-                                }
-                                return null;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _direccion,
-                              decoration: const InputDecoration(
-                                labelText: 'Dirección',
-                              ),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese su dirección';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const SizedBox(
-                              height: 4,
-                            ),
-                            const Text(
-                              'Profesión',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black54,
-                              ),
-                            ),
-                            SelectorProfesion(
-                              ocupacionInicial: _ocupacion,
-                              profesiones: personalDataController.profesiones,
-                              onChanged: (profesion) {
-                                _ocupacion = profesion.idAlianza;
-                              },
-                            ),
-                            TextFormField(
-                              controller: _actividad,
-                              decoration: const InputDecoration(
-                                  labelText: 'Actividad comercial:',
-                                  enabledBorder: UnderlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Color(0xff1D2766),
-                                    ),
-                                  )),
-                              validator: (String? value) {
-                                if (value!.isEmpty) {
-                                  return 'Ingrese su actividad';
-                                }
-                                return null;
-                              },
-                              inputFormatters: [
-                                UpperCaseTextFormatter(),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 24,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () async {
-                                    if (_formKey.currentState!.validate()) {
-                                      final clientResponse =
-                                          await personalDataController
-                                              .createClient(
-                                        name: _nombre.text,
-                                        lastName: _apellidoPaterno.text,
-                                        motherLastName: _apellidoMaterno.text,
-                                        cellPhone: _celular.text,
-                                        birthdate:
-                                            (_fechaNacimiento ?? DateTime.now())
-                                                .dashedDate,
-                                        gender: _genero!,
-                                        civilStatus: _estadoCivil,
-                                        documentType: _tipoDocumento!,
-                                        dni: _nroDocumento.text,
-                                        extension: _extDocumento,
-                                        email: _email.text,
-                                        country: _pais.toString(),
-                                        nationality: _nacionalidad.text,
-                                        city: _ciudad.toString(),
-                                        address: _direccion.text,
-                                        profession: _ocupacion.toString(),
-                                        comercialActivity: _actividad.text,
-                                      );
-
-                                      if (clientResponse != null) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => CarDataScreen(
-                                              personalDataController:
-                                                  personalDataController,
-                                            ),
-                                          ),
-                                        );
-                                      } else {
-                                        // TODO: Manejar errores
-                                      }
-                                    }
-
-                                    // personalDataController
-                                    // .setClientData(client);
-                                    // Navigator.push(
-                                    // context,
-                                    // MaterialPageRoute(
-                                    // builder: (_) => CarDataScreen(
-                                    // personalDataController:
-                                    // personalDataController,
-                                    // ),
-                                    // ),
-                                    // );
-                                  },
-                                  child: const Padding(
-                                    padding: EdgeInsets.symmetric(
-                                      horizontal: 24,
-                                      vertical: 12,
-                                    ),
-                                    child: Text(
-                                      "Siguiente",
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.normal,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 24,
-                            )
-                          ],
-                        );
-                      }),
-                )
-              ],
+                ),
+              ),
             ),
-          ),
-        ),
-      ),
+            if (isLoading)
+              Container(
+                color: AppColors.primary.withOpacity(0.2),
+                child: const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+          ],
+        );
+      },
     );
   }
 }

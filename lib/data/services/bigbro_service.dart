@@ -464,6 +464,9 @@ class BigBroService {
     required int renovation,
   }) async {
     try {
+      print(
+          'http://181.188.186.158:8000/api/stocks/quotes?city=$city&branch=$brandId&model=$model&use=$use&insured_value=$issueValue&renovation=$renovation');
+
       final response = await dio.get(
         'http://181.188.186.158:8000/api/stocks/quotes?city=$city&branch=$brandId&model=$model&use=$use&insured_value=$issueValue&renovation=$renovation',
       );
@@ -530,12 +533,12 @@ class BigBroService {
 
       final response = await dio.get(
         'http://181.188.186.158:8000/api/poliza/lista/fuerza/venta/?estado=$status',
-        // options: Options(
-        //   headers: <String, String>{
-        //     'Content-Type': 'application/json; charset=UTF-8',
-        //     'Authorization': 'Token $token'
-        //   },
-        // ),
+        options: Options(
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization': 'Token $token'
+          },
+        ),
       );
 
       if (response.isSuccess) {
