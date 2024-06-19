@@ -11,9 +11,13 @@ import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 class PersonalDataCIScreen extends StatefulWidget {
   const PersonalDataCIScreen({
     super.key,
+    this.ciFrontal,
+    this.ciTrasero,
     required this.personalDataController,
   });
 
+  final String? ciFrontal;
+  final String? ciTrasero;
   final PersonalDataController personalDataController;
 
   @override
@@ -43,6 +47,9 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
   @override
   void initState() {
     super.initState();
+    ciFrontaCargado = widget.ciFrontal;
+    ciTraseraCargado = widget.ciTrasero;
+
     _pageController.addListener(() {
       setState(() {
         currentPage = _pageController.page ?? 0.0;
@@ -225,20 +232,56 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
                                         ),
                                         onPressed: () async {
                                           if (_pageController.page == 2.0) {
-                                            if (_imageCiFrontal != null &&
+                                            if (_imageCiFrontal != null ||
                                                 _imageCiTrasera != null) {
-                                              _loadingNotifier.value = true;
-                                              final clientResponse =
-                                                  await widget
-                                                      .personalDataController
-                                                      .updateClientCI(
-                                                ciFrontal: _imageCiFrontal!,
-                                                ciTrasero: _imageCiTrasera!,
-                                              );
+                                              if (_imageCiFrontal != null &&
+                                                  _imageCiTrasera != null) {
+                                                _loadingNotifier.value = true;
+                                                final clientResponse =
+                                                    await widget
+                                                        .personalDataController
+                                                        .updateClientCI(
+                                                  ciFrontal: _imageCiFrontal!,
+                                                  ciTrasero: _imageCiTrasera!,
+                                                );
 
-                                              if (clientResponse != null) {
-                                                _loadingNotifier.value = false;
-                                                print('Client Response');
+                                                if (clientResponse != null) {
+                                                  _loadingNotifier.value =
+                                                      false;
+                                                  print('Client Response');
+                                                  Navigator.push(
+                                                    // ignore: use_build_context_synchronously
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (_) =>
+                                                          CarDataScreen(
+                                                        personalDataController:
+                                                            widget
+                                                                .personalDataController,
+                                                      ),
+                                                    ),
+                                                  );
+                                                } else {
+                                                  // TODO: Actualizar excepciones
+                                                  _loadingNotifier.value =
+                                                      false;
+
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Hubo un problema cargando las imágenes, inténtelo de nuevo o contacte a su administrador',
+                                                    toastLength:
+                                                        Toast.LENGTH_LONG,
+                                                  );
+                                                }
+                                              } else {
+                                                Fluttertoast.showToast(
+                                                  msg:
+                                                      'Imagen Frontal y Trasera son requeridas',
+                                                );
+                                              }
+                                            } else {
+                                              if (ciFrontaCargado != null &&
+                                                  ciTraseraCargado != null) {
                                                 Navigator.push(
                                                   // ignore: use_build_context_synchronously
                                                   context,
@@ -251,21 +294,11 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
                                                   ),
                                                 );
                                               } else {
-                                                // TODO: Actualizar excepciones
-                                                _loadingNotifier.value = false;
-
                                                 Fluttertoast.showToast(
                                                   msg:
-                                                      'Hubo un problema cargando las imágenes, inténtelo de nuevo o contacte a su administrador',
-                                                  toastLength:
-                                                      Toast.LENGTH_LONG,
+                                                      'Imagen Frontal y Trasera son requeridas',
                                                 );
                                               }
-                                            } else {
-                                              Fluttertoast.showToast(
-                                                msg:
-                                                    'Imagen Frontal y Trasera son requeridas',
-                                              );
                                             }
                                           } else {
                                             _pageController.nextPage(

@@ -7,8 +7,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart';
 import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
 import 'package:mibigbro_ventas_mobile/data/models/create_client/search_client_response.dart';
-import 'package:mibigbro_ventas_mobile/screens/car_data/car_data_screen.dart';
+import 'package:mibigbro_ventas_mobile/screens/personal_data/personal_data_ci_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
+import 'package:mibigbro_ventas_mobile/utils/constants.dart';
 import 'package:mibigbro_ventas_mobile/utils/extensions.dart';
 import 'package:mibigbro_ventas_mobile/utils/formatters/formatters.dart';
 import 'package:mibigbro_ventas_mobile/widgets/custom_date_picker.dart';
@@ -707,7 +708,9 @@ class _PersonalDataFoundClientScreen
                                       validator: (dynamic value) => value == 0
                                           ? 'Elija una ciudad'
                                           : null,
-                                      onChanged: null,
+                                      onChanged: (dynamic value) {
+                                        _ciudad = value;
+                                      },
                                       isExpanded: true,
                                     ),
                                     const SizedBox(
@@ -727,7 +730,9 @@ class _PersonalDataFoundClientScreen
                                       borderRadius: BorderRadius.circular(16),
                                       validator: (dynamic value) =>
                                           value == "NN" ? 'NN' : null,
-                                      onChanged: null,
+                                      onChanged: (dynamic value) {
+                                        _estadoCivil = value;
+                                      },
                                       selectedItemBuilder: (context) =>
                                           estadocivilItems2,
                                       isExpanded: true,
@@ -858,7 +863,15 @@ class _PersonalDataFoundClientScreen
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (_) =>
-                                                        CarDataScreen(
+                                                        PersonalDataCIScreen(
+                                                      ciFrontal: client
+                                                              .ciFrontal.isEmpty
+                                                          ? null
+                                                          : '$BASE_URL${client.ciFrontal}',
+                                                      ciTrasero: client
+                                                              .ciFrontal.isEmpty
+                                                          ? null
+                                                          : '$BASE_URL${client.ciFrontal}',
                                                       personalDataController:
                                                           personalDataController,
                                                     ),

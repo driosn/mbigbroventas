@@ -558,7 +558,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                 content: Column(
                                                   children: [
                                                     const Text(
-                                                      'El seguro ha sido preaprobado',
+                                                      'El seguro ha sido aprobado',
                                                       style: TextStyle(
                                                         fontWeight:
                                                             FontWeight.bold,
@@ -569,14 +569,6 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                     ),
                                                     const SizedBox(
                                                       height: 8,
-                                                    ),
-                                                    const Text(
-                                                      'Antes de continuar con el pago, los datos serán verificados.',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                      ),
                                                     ),
                                                     const SizedBox(
                                                       height: 16,
@@ -612,7 +604,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                                               context,
                                                               MaterialPageRoute(
                                                                 builder: (_) =>
-                                                                    HomeScreen(),
+                                                                    const HomeScreen(),
                                                               ),
                                                               (route) => false,
                                                             );
@@ -676,7 +668,7 @@ class _SummaryScreenState extends State<SummaryScreen> {
                                         height: 12,
                                       ),
                                       Text(
-                                        'En caso de contar con un error de información en los datos declarados, la póliza será anulada',
+                                        'Favor valide toda la información, en caso de contar con un error en los datos, la póliza será rechazada',
                                         textAlign: TextAlign.center,
                                       ),
                                       SizedBox(
