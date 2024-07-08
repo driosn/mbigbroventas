@@ -1,13 +1,16 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:mibigbro_ventas_mobile/controllers/polizas_controller.dart';
 import 'package:mibigbro_ventas_mobile/data/enums/bigbro_enums.dart';
 import 'package:mibigbro_ventas_mobile/data/models/poliza.dart';
+import 'package:mibigbro_ventas_mobile/data/services/bigbro_service.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/show_qr_dialog.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/extensions.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 enum TipoEstado {
   caducadas,
@@ -65,12 +68,12 @@ class _ApplicationsScreenState extends State<ApplicationsScreen> {
       color: Color(0xff9ED1FF),
     ),
     const EstadoSolicitud(
-      estado: 'Emitidas',
+      estado: 'Pendientes de pago',
       value: '1',
       color: Color(0xff1CF509),
     ),
     const EstadoSolicitud(
-      estado: 'Caducadas',
+      estado: 'Vencidas',
       value: '2',
       color: Colors.grey,
     ),
@@ -503,7 +506,7 @@ class _SolicitudCard extends StatefulWidget {
     if (tipoEstado == TipoEstado.emitidas) {
       alturaCard = 210;
     } else if (tipoEstado == TipoEstado.pagadas) {
-      alturaCard = 120;
+      alturaCard = 210;
     } else if (tipoEstado == TipoEstado.caducadas) {
       alturaCard = 120;
     }
@@ -551,152 +554,201 @@ class _SolicitudCardState extends State<_SolicitudCard> {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        widget.onTap();
-      },
-      child: SizedBox(
-        height: widget.alturaCard,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: Container(
-                    width: 1,
-                    color: widget.showTopLine
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                  ),
+    return SizedBox(
+      height: widget.alturaCard,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Expanded(
+                child: Container(
+                  width: 1,
+                  color: widget.showTopLine
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
                 ),
-                Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 13.5,
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          dia,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            color: Color(0xff464646),
-                          ),
+              ),
+              Padding(
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 13.5,
+                  ),
+                  child: Column(
+                    children: [
+                      Text(
+                        dia,
+                        style: const TextStyle(
+                          fontSize: 24,
+                          color: Color(0xff464646),
                         ),
-                        Text(
-                          meses[mes],
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w300,
-                          ),
-                        )
-                      ],
-                    )),
-                Expanded(
-                  child: Container(
-                    width: 1,
-                    color: widget.showBottomLine
-                        ? Theme.of(context).primaryColor
-                        : Colors.transparent,
-                  ),
-                )
-              ],
-            ),
-            const SizedBox(
-              width: 28,
-            ),
-            Expanded(
-              child: Container(
-                height: widget.alturaCard - 30,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                    color: const Color(0xffF2F2F2),
-                    borderRadius: BorderRadius.circular(16)),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.tipoEstado == TipoEstado.emitidas
-                          ? 'Emitido'
-                          : widget.tipoEstado == TipoEstado.caducadas
-                              ? 'Caducado'
-                              : 'Pagado',
-                      style: const TextStyle(
-                        fontSize: 16,
                       ),
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(top: 2),
-                          child: CircleAvatar(
-                            backgroundColor:
-                                widget.tipoEstado == TipoEstado.emitidas
-                                    ? const Color(0xff1CF509)
-                                    : widget.tipoEstado == TipoEstado.caducadas
-                                        ? Colors.grey
-                                        : AppColors.primary,
-                            radius: 8,
-                          ),
+                      Text(
+                        meses[mes],
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w300,
                         ),
-                        const SizedBox(
-                          width: 12,
+                      )
+                    ],
+                  )),
+              Expanded(
+                child: Container(
+                  width: 1,
+                  color: widget.showBottomLine
+                      ? Theme.of(context).primaryColor
+                      : Colors.transparent,
+                ),
+              )
+            ],
+          ),
+          const SizedBox(
+            width: 28,
+          ),
+          Expanded(
+            child: Container(
+              height: widget.alturaCard - 30,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                  color: const Color(0xffF2F2F2),
+                  borderRadius: BorderRadius.circular(16)),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    widget.tipoEstado == TipoEstado.emitidas
+                        ? 'Pendiente de pago'
+                        : widget.tipoEstado == TipoEstado.caducadas
+                            ? 'Vencido'
+                            : 'Pagado',
+                    style: const TextStyle(
+                      fontSize: 16,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Text('Placa: ${widget.poliza.placa}'),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 2),
+                        child: CircleAvatar(
+                          backgroundColor:
+                              widget.tipoEstado == TipoEstado.emitidas
+                                  ? const Color(0xff1CF509)
+                                  : widget.tipoEstado == TipoEstado.caducadas
+                                      ? Colors.grey
+                                      : AppColors.primary,
+                          radius: 8,
                         ),
-                        Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            widget.tipoEstado == TipoEstado.emitidas
-                                ? const Text(
-                                    'La solicitud ha sido aprobada',
-                                  )
-                                : const SizedBox(),
-                            const Text(
+                      ),
+                      const SizedBox(
+                        width: 12,
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          widget.tipoEstado == TipoEstado.emitidas
+                              ? const Text(
+                                  'La solicitud ha sido aprobada',
+                                )
+                              : const SizedBox(),
+                          GestureDetector(
+                            onTap: () {
+                              widget.onTap();
+                            },
+                            child: const Text(
                               'Ver Estado',
                               style: TextStyle(
                                 color: AppColors.primary,
+                                decoration: TextDecoration.underline,
                               ),
                             ),
-                            if (widget.tipoEstado == TipoEstado.emitidas)
-                              GestureDetector(
-                                onTap: () {
-                                  showQRDialog(
-                                    context,
-                                    insuranceId: widget.poliza.idPoliza,
-                                    amount:
-                                        widget.poliza.valorAsegurado.toInt(),
-                                    onFinish: () {
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                },
-                                child: const Text(
-                                  'Pagar',
-                                  style: TextStyle(
-                                      decoration: TextDecoration.underline,
-                                      color: AppColors.primary),
+                          ),
+                          if (widget.tipoEstado == TipoEstado.emitidas)
+                            GestureDetector(
+                              onTap: () {
+                                showQRDialog(
+                                  context,
+                                  insuranceId: widget.poliza.idPoliza,
+                                  amount: widget.poliza.valorAsegurado.toInt(),
+                                  onFinish: () {
+                                    Navigator.pop(context);
+                                  },
+                                );
+                              },
+                              child: const Text(
+                                'Pagar',
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: AppColors.primary,
                                 ),
-                              )
-                          ],
-                        ),
-                      ],
+                              ),
+                            )
+                        ],
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 18,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      try {
+                        final bigBroService = BigBroService();
+
+                        final urlCertificado = await bigBroService
+                            .descargarCertificado(widget.poliza.idPoliza);
+
+                        _launchCertURL(urlCertificado);
+                      } catch (e) {
+                        Fluttertoast.showToast(
+                          msg: 'Hubo un problema descargando el certificado',
+                        );
+                      }
+                    },
+                    child: const Text(
+                      'Ver Certificado',
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        color: AppColors.primary,
+                      ),
                     ),
-                  ],
-                ),
+                  )
+                ],
               ),
-            )
-          ],
-        ),
+            ),
+          )
+        ],
       ),
     );
+  }
+
+  Future<void> _launchInBrowser(String url) async {
+    try {
+      await launch(
+        url,
+        forceSafariVC: false,
+        forceWebView: false,
+        //headers: <String, String>{'my_header_key': 'my_header_value'},
+      );
+    } catch (error) {
+      throw 'Could not launch $url';
+    }
+  }
+
+  _launchCertURL(String urlCertificado) async {
+    try {
+      await _launchInBrowser(urlCertificado);
+    } catch (error) {
+      throw 'Could not launch $urlCertificado';
+    }
   }
 }

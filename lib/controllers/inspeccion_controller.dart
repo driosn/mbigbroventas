@@ -50,7 +50,7 @@ class InspeccionController extends ChangeNotifier {
 
   Future<CreateInspectionResponse?> update2({
     required File tablero,
-    required File damage,
+    required File? damage,
     required int carId,
   }) async {
     try {

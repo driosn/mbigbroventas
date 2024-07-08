@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
+import 'package:mibigbro_ventas_mobile/screens/home/home_screen.dart';
+import 'package:mibigbro_ventas_mobile/screens/login/login_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/onboard/onboarding_first_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
+import 'package:mibigbro_ventas_mobile/utils/storage/storage_helper.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -12,11 +17,25 @@ void main() async {
     await Permission.notification.request();
   }
 
-  runApp(const MyApp());
+  await storageHelper.init();
+  final (String?, String?) usernameAndPassword =
+      storageHelper.getUsernameAndPassword();
+
+  runApp(
+    MyApp(
+      existsUser:
+          usernameAndPassword.$1 != null && usernameAndPassword.$2 != null,
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({
+    super.key,
+    required this.existsUser,
+  });
+
+  final bool existsUser;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -69,9 +88,7 @@ class _MyAppState extends State<MyApp> {
         colorScheme: ColorScheme(
           secondary: const Color(0xffEC1C24),
           brightness: Brightness.light,
-          background: Colors.white,
           error: Colors.red,
-          onBackground: Theme.of(context).primaryColor,
           onError: Colors.white,
           onPrimary: Colors.white,
           onSecondary: Colors.white,
@@ -82,14 +99,14 @@ class _MyAppState extends State<MyApp> {
         scaffoldBackgroundColor: const Color(0xffFCFCFC),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ButtonStyle(
-            textStyle: MaterialStateProperty.all<TextStyle>(
+            textStyle: WidgetStateProperty.all<TextStyle>(
               const TextStyle(color: Colors.white),
             ),
-            elevation: MaterialStateProperty.all<double>(0.0),
-            backgroundColor: MaterialStateProperty.all<Color>(
+            elevation: WidgetStateProperty.all<double>(0.0),
+            backgroundColor: WidgetStateProperty.all<Color>(
               const Color(0xff1A2461),
             ),
-            shape: MaterialStateProperty.all(
+            shape: WidgetStateProperty.all(
               RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
@@ -114,7 +131,36 @@ class _MyAppState extends State<MyApp> {
       // TODO: Implement initial route
       // initialRoute:
       // (StorageUtils.getInteger("id_usuario") == 0) ? 'onboard1' : 'home',
-      home: const OnboardingFirstScreen(),
+      home: widget.existsUser
+          ? FutureBuilder<bool>(
+              future: loginControllerInstance.login(
+                email: storageHelper.getUsernameAndPassword().$1!,
+                password: storageHelper.getUsernameAndPassword().$2!,
+              ),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return const HomeScreen();
+                }
+
+                if (snapshot.hasError) {
+                  return const LoginScreen();
+                }
+
+                return Scaffold(
+                  body: Container(
+                    color: AppColors.primary,
+                    child: Center(
+                      child: SizedBox(
+                        height: 120,
+                        width: 120,
+                        child: Image.asset('assets/img/logo_bigbro.png'),
+                      ),
+                    ),
+                  ),
+                );
+              },
+            )
+          : const OnboardingFirstScreen(),
     );
   }
 }

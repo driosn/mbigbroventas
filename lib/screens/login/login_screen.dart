@@ -3,6 +3,7 @@ import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
 import 'package:mibigbro_ventas_mobile/data/globals.dart';
 import 'package:mibigbro_ventas_mobile/screens/home/home_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/login/forgot_password/forgot_password_email_screen.dart';
+import 'package:mibigbro_ventas_mobile/utils/storage/storage_helper.dart';
 
 // import 'package:fluttertoast/fluttertoast.dart';
 // import 'package:mibigbro/models/respuesta_crear_usuario.dart';
@@ -55,6 +56,16 @@ class _LoginScreenState extends State<LoginScreen> {
       gEmail = email;
 
       if (mounted) {
+        // storageHelper.saveUsernameAndPassword(
+        // 'davidsamuelrios07@gmail.com',
+        // 'Abrenet123*',
+        // );
+
+        storageHelper.saveUsernameAndPassword(
+          email,
+          password,
+        );
+
         Navigator.push(
           context,
           MaterialPageRoute(

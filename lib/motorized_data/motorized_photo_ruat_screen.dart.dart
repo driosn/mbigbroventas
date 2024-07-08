@@ -80,37 +80,42 @@ class _MotorizedPhotoRuatScreenState extends State<MotorizedPhotoRuatScreen> {
                           },
                           imagen: imageRuat,
                           onTapInfo: () {
-                            CustomDialog(
+                            showDialog(
                               context: context,
-                              iconColor:
-                                  Theme.of(context).colorScheme.secondary,
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 40,
-                                color: Colors.white,
-                              ),
-                              content: Column(
-                                children: [
-                                  Text(
-                                    'Tomar en cuenta para la foto',
-                                    style: TextStyle(
-                                      color: Theme.of(context).primaryColor,
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                              builder: (_) {
+                                return CustomDialog(
+                                  context: context,
+                                  iconColor:
+                                      Theme.of(context).colorScheme.secondary,
+                                  icon: const Icon(
+                                    Icons.camera_alt_outlined,
+                                    size: 40,
+                                    color: Colors.white,
                                   ),
-                                  const SizedBox(
-                                    height: 20,
+                                  content: Column(
+                                    children: [
+                                      Text(
+                                        'Tomar en cuenta para la foto',
+                                        style: TextStyle(
+                                          color: Theme.of(context).primaryColor,
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 20,
+                                      ),
+                                      const Text(
+                                          'En la foto debe estar visible el RUAT del vehículo a asegurar'),
+                                      const SizedBox(
+                                        height: 32,
+                                      )
+                                    ],
                                   ),
-                                  const Text(
-                                      'En la foto debe estar visible el RUAT del vehículo a asegurar'),
-                                  const SizedBox(
-                                    height: 32,
-                                  )
-                                ],
-                              ),
-                              extraActions: const [],
-                              hideActions: false,
+                                  extraActions: const [],
+                                  hideActions: false,
+                                );
+                              },
                             );
                           },
                           placeHolderAsset: 'assets/img/foto_ruat.png',

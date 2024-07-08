@@ -232,6 +232,14 @@ class _PersonalDataFoundClientScreen
     return menuItems;
   }
 
+  void _scrollTo(double offset) {
+    _scrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.linear,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -331,15 +339,16 @@ class _PersonalDataFoundClientScreen
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     TextFormField(
-                                      enabled: false,
                                       controller: _nombre,
                                       decoration: const InputDecoration(
-                                          labelText: 'Nombre',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Nombre',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
                                           _scrollController.animateTo(0.0,
@@ -355,15 +364,16 @@ class _PersonalDataFoundClientScreen
                                       ],
                                     ),
                                     TextFormField(
-                                      enabled: false,
                                       controller: _apellidoPaterno,
                                       decoration: const InputDecoration(
-                                          labelText: 'Apellido paterno',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Apellido paterno',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
                                           _scrollController.animateTo(0.0,
@@ -379,21 +389,24 @@ class _PersonalDataFoundClientScreen
                                       ],
                                     ),
                                     TextFormField(
-                                      enabled: false,
                                       controller: _apellidoMaterno,
                                       decoration: const InputDecoration(
-                                          labelText: 'Apellido materno',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Apellido materno',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
-                                          _scrollController.animateTo(0.0,
-                                              duration: const Duration(
-                                                  milliseconds: 600),
-                                              curve: Curves.linear);
+                                          _scrollController.animateTo(
+                                            0.0,
+                                            duration: const Duration(
+                                                milliseconds: 600),
+                                            curve: Curves.linear,
+                                          );
                                           return 'Ingrese su apellido materno';
                                         }
                                         return null;
@@ -407,7 +420,6 @@ class _PersonalDataFoundClientScreen
                                         FilteringTextInputFormatter.deny(''),
                                       ],
                                       readOnly: true,
-                                      enabled: false,
                                       controller: _nacimientoController,
                                       decoration: const InputDecoration(
                                         hintStyle:
@@ -417,6 +429,7 @@ class _PersonalDataFoundClientScreen
                                         ),
                                         suffixIcon: Icon(Icons.event_note),
                                         labelText: 'Fecha de nacimiento',
+                                        enabled: false,
                                       ),
                                       onTap: () async {
                                         final fechaNacimiento =
@@ -443,20 +456,24 @@ class _PersonalDataFoundClientScreen
                                       validator: (String? value) {
                                         final date = _fechaNacimiento;
                                         int yearDiff = 0;
+
                                         if (date != null) {
                                           DateTime today = DateTime.now();
                                           yearDiff = today.year - date.year;
                                         }
 
                                         if (date == null) {
+                                          _scrollTo(400);
                                           return 'Ingrese la fecha de nacimiento';
                                         }
 
                                         if (yearDiff < 18) {
+                                          _scrollTo(400);
                                           return 'Debe tener más de 18 años';
                                         }
 
                                         if (yearDiff > 75) {
+                                          _scrollTo(400);
                                           return 'Debe tener un maximo de 75 años';
                                         }
 
@@ -464,22 +481,25 @@ class _PersonalDataFoundClientScreen
                                       },
                                     ),
                                     TextFormField(
-                                      enabled: false,
                                       controller: _email,
                                       decoration: const InputDecoration(
-                                          labelText: 'Correo electrónico',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Correo electrónico',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
+                                          _scrollTo(300);
                                           return 'Ingrese su correo';
                                         }
                                         return null;
                                       },
                                     ),
+
                                     const SizedBox(
                                       height: 6,
                                     ),
@@ -499,8 +519,14 @@ class _PersonalDataFoundClientScreen
                                         angle: pi * 1.5,
                                         child: const Icon(Icons.chevron_left),
                                       ),
-                                      validator: (dynamic value) =>
-                                          value == "NN" ? "NN" : null,
+                                      validator: (dynamic value) {
+                                        if (value == "NN") {
+                                          _scrollTo(400);
+                                          return "Ingrese su Género";
+                                        }
+
+                                        return null;
+                                      },
                                       onChanged: null,
                                       selectedItemBuilder:
                                           (BuildContext context) {
@@ -540,8 +566,14 @@ class _PersonalDataFoundClientScreen
                                               ))
                                           .toList(),
                                       value: _tipoDocumento,
-                                      validator: (dynamic value) =>
-                                          value == null ? 'CI' : null,
+                                      validator: (dynamic value) {
+                                        if (value == null) {
+                                          _scrollTo(700);
+                                          return 'Ingrese el tipo de documento';
+                                        }
+
+                                        return null;
+                                      },
                                       onChanged: null,
                                       selectedItemBuilder: (context) => [
                                         "CI",
@@ -561,17 +593,19 @@ class _PersonalDataFoundClientScreen
                                       isExpanded: true,
                                     ),
                                     TextFormField(
-                                      enabled: false,
                                       controller: _nroDocumento,
                                       decoration: const InputDecoration(
-                                          labelText: 'Número de documento:',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Número de documento:',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
+                                          _scrollTo(400);
                                           return 'Ingrese el número de documento';
                                         }
                                         return null;
@@ -583,6 +617,13 @@ class _PersonalDataFoundClientScreen
                                     const SizedBox(
                                       height: 4,
                                     ),
+                                    // const Text(
+                                    // 'Extensión',
+                                    // style: TextStyle(
+                                    // fontSize: 12,
+                                    // color: Colors.black54,
+                                    // ),
+                                    // ),
                                     DropdownButtonFormField<String>(
                                       decoration: const InputDecoration(
                                         hintStyle:
@@ -621,10 +662,14 @@ class _PersonalDataFoundClientScreen
                                         );
                                       }).toList(),
                                       value: _extDocumento,
-                                      validator: (dynamic value) =>
-                                          value == 'NN'
-                                              ? 'Elija una extensión'
-                                              : null,
+                                      validator: (dynamic value) {
+                                        if (value == 'NN') {
+                                          _scrollTo(800);
+                                          return 'Elija una extensión';
+                                        }
+
+                                        return null;
+                                      },
                                       onChanged: null,
                                       isExpanded: true,
                                     ),
@@ -644,8 +689,13 @@ class _PersonalDataFoundClientScreen
                                               ))
                                           .toList(),
                                       value: _pais,
-                                      validator: (dynamic value) =>
-                                          value == 0 ? 'Elija un país' : null,
+                                      validator: (dynamic value) {
+                                        if (value == 0) {
+                                          _scrollTo(800);
+                                          return 'Elija un país';
+                                        }
+                                        return null;
+                                      },
                                       onChanged: null,
                                       isExpanded: true,
                                     ),
@@ -653,17 +703,19 @@ class _PersonalDataFoundClientScreen
                                       height: 4,
                                     ),
                                     TextFormField(
-                                      enabled: false,
                                       controller: _nacionalidad,
                                       decoration: const InputDecoration(
-                                          labelText: 'Nacionalidad',
-                                          enabledBorder: UnderlineInputBorder(
-                                            borderSide: BorderSide(
-                                              color: Color(0xff1D2766),
-                                            ),
-                                          )),
+                                        labelText: 'Nacionalidad',
+                                        enabledBorder: UnderlineInputBorder(
+                                          borderSide: BorderSide(
+                                            color: Color(0xff1D2766),
+                                          ),
+                                        ),
+                                        enabled: false,
+                                      ),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
+                                          _scrollTo(800);
                                           return 'Ingrese su nacionalidad';
                                         }
                                         return null;
@@ -705,9 +757,13 @@ class _PersonalDataFoundClientScreen
                                         );
                                       }).toList(),
                                       value: _ciudad,
-                                      validator: (dynamic value) => value == 0
-                                          ? 'Elija una ciudad'
-                                          : null,
+                                      validator: (dynamic value) {
+                                        if (value == 0) {
+                                          _scrollTo(800);
+                                          return 'Elija una ciudad';
+                                        }
+                                        return null;
+                                      },
                                       onChanged: (dynamic value) {
                                         _ciudad = value;
                                       },
@@ -728,8 +784,13 @@ class _PersonalDataFoundClientScreen
                                       items: estadocivilItems,
                                       value: _estadoCivil,
                                       borderRadius: BorderRadius.circular(16),
-                                      validator: (dynamic value) =>
-                                          value == "NN" ? 'NN' : null,
+                                      validator: (dynamic value) {
+                                        if (value == "NN") {
+                                          _scrollTo(1000);
+                                          return 'Elija estado civil';
+                                        }
+                                        return null;
+                                      },
                                       onChanged: (dynamic value) {
                                         _estadoCivil = value;
                                       },
@@ -752,10 +813,13 @@ class _PersonalDataFoundClientScreen
                                           )),
                                       validator: (String? value) {
                                         if (value!.isEmpty) {
-                                          _scrollController.animateTo(0.0,
-                                              duration: const Duration(
-                                                  milliseconds: 600),
-                                              curve: Curves.linear);
+                                          _scrollController.animateTo(
+                                            1000.0,
+                                            duration: const Duration(
+                                              milliseconds: 600,
+                                            ),
+                                            curve: Curves.linear,
+                                          );
                                           return 'Ingrese número de celular';
                                         }
                                         return null;

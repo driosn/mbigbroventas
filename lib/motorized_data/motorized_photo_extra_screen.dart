@@ -159,54 +159,59 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
                                   },
                                   imagen: imageTablero,
                                   onTapInfo: () {
-                                    CustomDialog(
+                                    showDialog(
                                       context: context,
-                                      iconColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      icon: const Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                      content: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
+                                      builder: (_) {
+                                        return CustomDialog(
+                                          context: context,
+                                          iconColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          icon: const Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 40,
+                                            color: Colors.white,
                                           ),
-                                          Text(
-                                            'Tomar en cuenta para la foto',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                          content: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                'Tomar en cuenta para la foto',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                              Text(
+                                                'Foto del tablero',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              const Text(
+                                                  'La foto debe mostrar todo el tablero del automóvil, asegurate de que se pueda ver la marca de la radio'),
+                                              const SizedBox(
+                                                height: 32,
+                                              )
+                                            ],
                                           ),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          Text(
-                                            'Foto del tablero',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          const Text(
-                                              'La foto debe mostrar todo el tablero del automóvil, asegurate de que se pueda ver la marca de la radio'),
-                                          const SizedBox(
-                                            height: 32,
-                                          )
-                                        ],
-                                      ),
-                                      extraActions: const [],
-                                      hideActions: false,
+                                          extraActions: const [],
+                                          hideActions: false,
+                                        );
+                                      },
                                     );
                                   },
                                   placeHolderAsset:
@@ -220,54 +225,59 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
                                   },
                                   imagen: imageDamage,
                                   onTapInfo: () {
-                                    CustomDialog(
+                                    showDialog(
                                       context: context,
-                                      iconColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                      icon: const Icon(
-                                        Icons.camera_alt_outlined,
-                                        size: 40,
-                                        color: Colors.white,
-                                      ),
-                                      content: Column(
-                                        children: [
-                                          const SizedBox(
-                                            height: 10,
+                                      builder: (_) {
+                                        return CustomDialog(
+                                          context: context,
+                                          iconColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          icon: const Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 40,
+                                            color: Colors.white,
                                           ),
-                                          Text(
-                                            'Tomar en cuenta para la foto',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
+                                          content: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                'Tomar en cuenta para la foto',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                              Text(
+                                                'Foto del daño',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              const Text(
+                                                  'Si su automóvil tiene algún daño debe incluir una fotografía'),
+                                              const SizedBox(
+                                                height: 32,
+                                              )
+                                            ],
                                           ),
-                                          const SizedBox(
-                                            height: 12,
-                                          ),
-                                          Text(
-                                            'Foto del daño',
-                                            style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor,
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          const SizedBox(
-                                            height: 20,
-                                          ),
-                                          const Text(
-                                              'Si su automóvil tiene algún daño debe incluir una fotografía'),
-                                          const SizedBox(
-                                            height: 32,
-                                          )
-                                        ],
-                                      ),
-                                      extraActions: const [],
-                                      hideActions: false,
+                                          extraActions: const [],
+                                          hideActions: false,
+                                        );
+                                      },
                                     );
                                   },
                                   placeHolderAsset: 'assets/img/foto_dano.png',
@@ -324,14 +334,13 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
                                   ),
                                   onPressed: () async {
                                     if (_pageController.page == 2.0) {
-                                      if (imageDamage != null &&
-                                          imageTablero != null) {
+                                      if (imageTablero != null) {
                                         _isLoadingNotifier.value = true;
 
                                         final inspectionResponse = await widget
                                             .inspectionController
                                             .update2(
-                                          damage: imageDamage!,
+                                          damage: imageDamage,
                                           tablero: imageTablero!,
                                           carId: widget.carController.carId,
                                         );

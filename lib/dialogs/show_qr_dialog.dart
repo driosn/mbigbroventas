@@ -99,9 +99,9 @@ showQRDialog(
                   onPressed: () async {
                     final temporaryDir = (await getTemporaryDirectory()).path;
                     File file = File(
-                        '/storage/emulated/0/Download/${DateTime.now().millisecondsSinceEpoch}.pdf');
+                        '/storage/emulated/0/Download/${DateTime.now().millisecondsSinceEpoch}.png');
                     File temporaryFile = File(
-                        '$temporaryDir/${DateTime.now().millisecondsSinceEpoch}.pdf');
+                        '$temporaryDir/${DateTime.now().millisecondsSinceEpoch}.png');
                     // TODO: IMprove qr generation
                     final qrString = await BigBroService().generateQR(
                       insuranceId.toString(),
@@ -132,12 +132,12 @@ showQRDialog(
                   onPressed: () async {
                     final temporaryDir = (await getTemporaryDirectory()).path;
                     File file = File(
-                        '/storage/emulated/0/Download/${DateTime.now().millisecondsSinceEpoch}.pdf');
+                        '/storage/emulated/0/Download/${DateTime.now().millisecondsSinceEpoch}.png');
                     File temporaryFile = File(
-                        '$temporaryDir/${DateTime.now().millisecondsSinceEpoch}.pdf');
+                        '$temporaryDir/${DateTime.now().millisecondsSinceEpoch}.png');
                     // TODO: IMprove qr generation
                     final qrString = await BigBroService().generateQR(
-                      "80",
+                      insuranceId.toString(),
                       amount.toString(),
                     );
                     final imageBytes = base64Decode(qrString);

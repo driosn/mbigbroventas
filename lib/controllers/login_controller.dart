@@ -33,6 +33,7 @@ class LoginController extends ChangeNotifier {
       );
       loginResponse = response;
       loginStatus = BigBroStatus.success;
+
       notifyListeners();
 
       return true;

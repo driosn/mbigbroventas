@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:mibigbro_ventas_mobile/controllers/login_controller.dart';
 import 'package:mibigbro_ventas_mobile/screens/applications/applications_screen.dart';
-import 'package:mibigbro_ventas_mobile/screens/contact/contact_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/login/login_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/search_client/search_client_renovation_screen.dart';
 import 'package:mibigbro_ventas_mobile/screens/search_client/search_client_screen.dart';
 import 'package:mibigbro_ventas_mobile/utils/app_colors.dart';
 import 'package:mibigbro_ventas_mobile/utils/spacing.dart';
+import 'package:mibigbro_ventas_mobile/utils/storage/storage_helper.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -58,22 +58,32 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  final ValueNotifier<bool> isDrawerOpened = ValueNotifier(false);
+
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Scaffold(
-          bottomNavigationBar: Container(
-            height: 86,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: Theme.of(context).primaryColor,
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(25),
-                topRight: Radius.circular(25),
-              ),
-            ),
-          ),
+          onDrawerChanged: (isOpened) {
+            isDrawerOpened.value = isOpened;
+          },
+          resizeToAvoidBottomInset: false,
+          bottomNavigationBar: ValueListenableBuilder<bool>(
+              valueListenable: isDrawerOpened,
+              builder: (context, isDrawerOpened, child) {
+                return Container(
+                  height: 86,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).primaryColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(25),
+                      topRight: Radius.circular(25),
+                    ),
+                  ),
+                );
+              }),
           key: scaffoldKey,
           drawer: const HomeDrawer(),
           body: Column(
@@ -146,25 +156,29 @@ class _HomeScreenState extends State<HomeScreen> {
         Positioned(
           left: MediaQuery.of(context).size.width / 2 - 40,
           bottom: 20,
-          child: GestureDetector(
-            onTap: () {},
-            child: Container(
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.secondary,
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: Theme.of(context).primaryColor,
-                  width: 10,
+          child: ValueListenableBuilder<bool>(
+            valueListenable: isDrawerOpened,
+            builder: (context, isDrawerOpened, child) {
+              if (isDrawerOpened) return const SizedBox();
+
+              return Container(
+                height: 80,
+                width: 80,
+                decoration: BoxDecoration(
+                  color: Theme.of(context).colorScheme.secondary,
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: Theme.of(context).primaryColor,
+                    width: 10,
+                  ),
                 ),
-              ),
-              child: Center(
-                child: SvgPicture.asset(
-                  'assets/img/svg/house.svg',
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/img/svg/house.svg',
+                  ),
                 ),
-              ),
-            ),
+              );
+            },
           ),
         )
       ],
@@ -216,21 +230,23 @@ class _HomeScreenState extends State<HomeScreen> {
                 width: SpacingValues.l,
               ),
               Expanded(
-                child: _optionButton(
-                  carImagePath: 'assets/img/car2.png',
-                  text: 'Renovar Seguro',
-                  gradientColors: [
-                    const Color(0xff1D2766).withOpacity(0.86),
-                    const Color(0xff1A2461),
-                  ],
-                  onTapped: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const SearchClientRenovationScreen(),
-                      ),
-                    );
-                  },
+                child: Container(
+                  child: _optionButton(
+                    carImagePath: 'assets/img/car2.png',
+                    text: 'Renovar\nSeguro',
+                    gradientColors: [
+                      const Color(0xff1D2766).withOpacity(0.86),
+                      const Color(0xff1A2461),
+                    ],
+                    onTapped: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const SearchClientRenovationScreen(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ),
             ],
@@ -240,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           _extraOptionButton(
             context,
-            title: 'Tus Seguros',
+            title: 'Tus Registros',
             subtitle: 'Visualiza tu listado de seguros activos y pagados',
             icon: SvgPicture.asset(
               'assets/img/svg/solicitudes.svg',
@@ -352,7 +368,7 @@ class _HomeScreenState extends State<HomeScreen> {
               top: SpacingValues.m * 2,
               bottom: SpacingValues.l * 6,
             ),
-            child: AutoSizeText(
+            child: Text(
               text,
               style: const TextStyle(
                 color: Colors.white,
@@ -462,55 +478,38 @@ class HomeDrawer extends StatelessWidget {
                   const SizedBox(
                     height: 32,
                   ),
+                  // GestureDetector(
+                  //   onTap: () {
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (_) {
+                  //           return const Contacto();
+                  //         },
+                  //       ),
+                  //     );
+                  //   },
+                  //   child: const Row(
+                  //     children: [
+                  //       Icon(Icons.lock, color: Colors.white),
+                  //       SizedBox(
+                  //         width: 8,
+                  //       ),
+                  //       Expanded(
+                  //         child: Text(
+                  //           'Modificar Contraseña',
+                  //           style: TextStyle(color: Colors.white, fontSize: 18),
+                  //         ),
+                  //       )
+                  //     ],
+                  //   ),
+                  // ),
+                  // const SizedBox(
+                  //   height: 16,
+                  // ),
                   GestureDetector(
                     onTap: () {
-                      // onTapIndex(3);
-                    },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.lock_clock, color: Colors.white),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          'Pendientes',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) {
-                            return const Contacto();
-                          },
-                        ),
-                      );
-                    },
-                    child: const Row(
-                      children: [
-                        Icon(Icons.chat, color: Colors.white),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          'Contacto',
-                          style: TextStyle(color: Colors.white, fontSize: 20),
-                        )
-                      ],
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 16,
-                  ),
-                  GestureDetector(
-                    onTap: () {
+                      storageHelper.clearUsernameAnPassword();
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(

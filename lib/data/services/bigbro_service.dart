@@ -355,14 +355,27 @@ class BigBroService {
     required String inspectionId,
     required String carId,
     required File tablero,
-    required File damage,
+    required File? damage,
   }) async {
     try {
-      final formData = FormData.fromMap({
-        'tablero': await MultipartFile.fromFile(tablero.path),
-        'damage': await MultipartFile.fromFile(damage.path),
-        'automovil': carId,
-      });
+      String tableroName = tablero.path.split('/').last;
+
+      var datosEnviar = {
+        "automovil": carId,
+        "tablero": await MultipartFile.fromFile(
+          tablero.path,
+          filename: tableroName,
+        ),
+      };
+
+      if (damage != null) {
+        String damageName = damage.path.split('/').last;
+        datosEnviar["damage"] = await MultipartFile.fromFile(
+          damage.path,
+          filename: damageName,
+        );
+      }
+      FormData formData = FormData.fromMap(datosEnviar);
 
       final response = await dio.put(
         'http://181.188.186.158:8000/api/inspeccion/update/$inspectionId',
@@ -490,7 +503,7 @@ class BigBroService {
   ) async {
     try {
       final response = await dio.get(
-        'http://181.188.186.158:8000/api/alianza/getQR/123123/',
+        'http://181.188.186.158:8000/api/alianza/getQR/$insuranceId/',
       );
 
       if (response.isSuccess) {
@@ -553,5 +566,22 @@ class BigBroService {
     } catch (exception) {
       rethrow;
     }
+  }
+
+  Future<String> descargarCertificado(int idPoliza) async {
+    final token = loginControllerInstance.loginResponse!.token;
+
+    final response = await dio.get(
+      'http://181.188.186.158:8000/api/alianza/descargar_certificado/?id_poliza=$idPoliza',
+      options: Options(
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Token $token'
+        },
+      ),
+    );
+
+    final datosCertificado = response.data;
+    return datosCertificado['url_certificado'];
   }
 }

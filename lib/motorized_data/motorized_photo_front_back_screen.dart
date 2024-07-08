@@ -138,53 +138,59 @@ class _MotorizedPhotoFrontBackScreenState
                                 },
                                 imagen: imageFrontal,
                                 onTapInfo: () {
-                                  CustomDialog(
+                                  showDialog(
                                     context: context,
-                                    iconColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: const Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                    content: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
+                                    builder: (_) {
+                                      return CustomDialog(
+                                        context: context,
+                                        iconColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        icon: const Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 40,
+                                          color: Colors.white,
                                         ),
-                                        Text(
-                                          'Tomar en cuenta para la foto',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        content: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              'Tomar en cuenta para la foto',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 12,
+                                            ),
+                                            Text(
+                                              'Foto frontal',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            const Text(
+                                                'La foto delantera debe mostrar toda la parte delantera del vehículo y la placa'),
+                                            const SizedBox(
+                                              height: 32,
+                                            )
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          'Foto frontal',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                            'La foto delantera debe mostrar toda la parte delantera del vehículo y la placa'),
-                                        const SizedBox(
-                                          height: 32,
-                                        )
-                                      ],
-                                    ),
-                                    extraActions: const [],
-                                    hideActions: false,
+                                        extraActions: const [],
+                                        hideActions: false,
+                                      );
+                                    },
                                   );
                                 },
                                 placeHolderAsset:
@@ -198,57 +204,63 @@ class _MotorizedPhotoFrontBackScreenState
                                 },
                                 imagen: imageTrasera,
                                 onTapInfo: () {
-                                  CustomDialog(
+                                  showDialog(
                                     context: context,
-                                    iconColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: const Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                    content: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
+                                    builder: (_) {
+                                      return CustomDialog(
+                                        context: context,
+                                        iconColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        icon: const Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 40,
+                                          color: Colors.white,
                                         ),
-                                        Text(
-                                          'Tomar en cuenta para la foto',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        content: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              'Tomar en cuenta para la foto',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 12,
+                                            ),
+                                            Text(
+                                              'Foto posterior',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            const Text(
+                                                'La foto debe mostrar toda la parte posterior del vehículo y placa visible'),
+                                            const SizedBox(
+                                              height: 32,
+                                            )
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          'Foto posterior',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                            'La foto debe mostrar toda la parte posterior del vehículo y placa visible'),
-                                        const SizedBox(
-                                          height: 32,
-                                        )
-                                      ],
-                                    ),
-                                    extraActions: const [],
-                                    hideActions: false,
+                                        extraActions: const [],
+                                        hideActions: false,
+                                      );
+                                    },
                                   );
                                 },
                                 placeHolderAsset:
-                                    'assets/img/foto_automovil.png',
+                                    'assets/img/foto_automovil_trasera.png',
                                 description:
                                     'Se debe tomar la fotografía en un lugar iluminado y con el automóvil limpio',
                               ),

@@ -254,18 +254,7 @@ class _SearchClientRenovationScreenState
                     valueListenable: polizasNotifier,
                     builder: (context, polizas, child) {
                       if (polizas == null) {
-                        return Container(
-                          margin: const EdgeInsets.only(
-                            top: 32,
-                          ),
-                          child: const Text(
-                            'Busque polizas vencidas por CI',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: AppColors.primary,
-                            ),
-                          ),
-                        );
+                        return const SizedBox();
                       }
 
                       if (polizas.isEmpty) {
@@ -384,7 +373,9 @@ class _SearchClientRenovationScreenState
               FilteringTextInputFormatter.digitsOnly,
             ],
             decoration: const InputDecoration(
-              hintText: 'Buscar cliente por CI',
+              hintText:
+                  'Buscar pólizas vencidas por número de documento de identidad',
+              hintMaxLines: 2,
             ),
           ),
         ),
@@ -395,7 +386,8 @@ class _SearchClientRenovationScreenState
           onPressed: () async {
             try {
               if (_ciController.text.isEmpty) {
-                Fluttertoast.showToast(msg: 'Debe ingresar un número de CI');
+                Fluttertoast.showToast(
+                    msg: 'Debe ingresar un número de documento de identidad');
                 return;
               }
 

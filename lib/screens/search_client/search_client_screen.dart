@@ -114,18 +114,7 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
                     );
                   }
 
-                  return Container(
-                    margin: const EdgeInsets.only(
-                      top: 32,
-                    ),
-                    child: const Text(
-                      'Busque cliente por CI',
-                      style: TextStyle(
-                        fontSize: 20,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  );
+                  return const SizedBox();
                 },
               ),
             ],
@@ -146,7 +135,11 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
               FilteringTextInputFormatter.digitsOnly,
             ],
             decoration: const InputDecoration(
-              hintText: 'Buscar cliente por CI',
+              hintText: 'Número de documento de identidad',
+              hintMaxLines: 2,
+              hintStyle: TextStyle(
+                fontSize: 16,
+              ),
             ),
           ),
         ),
@@ -157,7 +150,9 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
           onPressed: () async {
             try {
               if (_ciController.text.isEmpty) {
-                Fluttertoast.showToast(msg: 'Debe ingresar un número de CI');
+                Fluttertoast.showToast(
+                    msg:
+                        'Debe ingresar un número de número de documento de identidad');
                 return;
               }
 
@@ -181,7 +176,9 @@ class _SearchClientScreenState extends State<SearchClientScreen> {
                 // ignore: use_build_context_synchronously
                 context,
                 MaterialPageRoute(
-                  builder: (_) => const PersonalDataFormScreen(),
+                  builder: (_) => PersonalDataFormScreen(
+                    initialCI: _ciController.text,
+                  ),
                 ),
               );
 

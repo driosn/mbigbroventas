@@ -103,8 +103,10 @@ class PersonalDataFormScreen extends StatefulWidget {
   const PersonalDataFormScreen({
     super.key,
     this.mostrarRegistroExitoso = false,
+    required this.initialCI,
   });
 
+  final String initialCI;
   final bool mostrarRegistroExitoso;
 
   @override
@@ -128,6 +130,8 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
   @override
   void initState() {
     super.initState();
+
+    _nroDocumento.text = widget.initialCI;
     _isLoadingNotifier = ValueNotifier<bool>(false);
 
     personalDataController.getExtraData();
@@ -293,6 +297,14 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
     return menuItems;
   }
 
+  void _scrollTo(double offset) {
+    _scrollController.animateTo(
+      offset,
+      duration: const Duration(milliseconds: 600),
+      curve: Curves.linear,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
@@ -448,10 +460,12 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                         )),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
-                                        _scrollController.animateTo(0.0,
-                                            duration: const Duration(
-                                                milliseconds: 600),
-                                            curve: Curves.linear);
+                                        _scrollController.animateTo(
+                                          0.0,
+                                          duration:
+                                              const Duration(milliseconds: 600),
+                                          curve: Curves.linear,
+                                        );
                                         return 'Ingrese su apellido materno';
                                       }
                                       return null;
@@ -500,20 +514,24 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                     validator: (String? value) {
                                       final date = _fechaNacimiento;
                                       int yearDiff = 0;
+
                                       if (date != null) {
                                         DateTime today = DateTime.now();
                                         yearDiff = today.year - date.year;
                                       }
 
                                       if (date == null) {
+                                        _scrollTo(400);
                                         return 'Ingrese la fecha de nacimiento';
                                       }
 
                                       if (yearDiff < 18) {
+                                        _scrollTo(400);
                                         return 'Debe tener más de 18 años';
                                       }
 
                                       if (yearDiff > 75) {
+                                        _scrollTo(400);
                                         return 'Debe tener un maximo de 75 años';
                                       }
 
@@ -531,6 +549,7 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                         )),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
+                                        _scrollTo(300);
                                         return 'Ingrese su correo';
                                       }
                                       return null;
@@ -556,8 +575,14 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                       angle: pi * 1.5,
                                       child: const Icon(Icons.chevron_left),
                                     ),
-                                    validator: (dynamic value) =>
-                                        value == "NN" ? "NN" : null,
+                                    validator: (dynamic value) {
+                                      if (value == "NN") {
+                                        _scrollTo(400);
+                                        return "Ingrese su Género";
+                                      }
+
+                                      return null;
+                                    },
                                     onChanged: (dynamic value) {
                                       _genero = value;
                                     },
@@ -598,8 +623,14 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                             ))
                                         .toList(),
                                     value: _tipoDocumento,
-                                    validator: (dynamic value) =>
-                                        value == null ? 'CI' : null,
+                                    validator: (dynamic value) {
+                                      if (value == null) {
+                                        _scrollTo(700);
+                                        return 'Ingrese el tipo de documento';
+                                      }
+
+                                      return null;
+                                    },
                                     onChanged: (dynamic value) {
                                       _tipoDocumento = value;
                                     },
@@ -619,14 +650,16 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                   TextFormField(
                                     controller: _nroDocumento,
                                     decoration: const InputDecoration(
-                                        labelText: 'Número de documento:',
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Color(0xff1D2766),
-                                          ),
-                                        )),
+                                      labelText: 'Número de documento:',
+                                      enabledBorder: UnderlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Color(0xff1D2766),
+                                        ),
+                                      ),
+                                    ),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
+                                        _scrollTo(400);
                                         return 'Ingrese el número de documento';
                                       }
                                       return null;
@@ -682,9 +715,14 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                       );
                                     }).toList(),
                                     value: _extDocumento,
-                                    validator: (dynamic value) => value == 'NN'
-                                        ? 'Elija una extensión'
-                                        : null,
+                                    validator: (dynamic value) {
+                                      if (value == 'NN') {
+                                        _scrollTo(800);
+                                        return 'Elija una extensión';
+                                      }
+
+                                      return null;
+                                    },
                                     onChanged: (String? value) {
                                       _extDocumento = value!;
                                     },
@@ -706,8 +744,13 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                             ))
                                         .toList(),
                                     value: _pais,
-                                    validator: (dynamic value) =>
-                                        value == 0 ? 'Elija un país' : null,
+                                    validator: (dynamic value) {
+                                      if (value == 0) {
+                                        _scrollTo(800);
+                                        return 'Elija un país';
+                                      }
+                                      return null;
+                                    },
                                     onChanged: (dynamic value) {
                                       _pais = value;
                                     },
@@ -727,6 +770,7 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                         )),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
+                                        _scrollTo(800);
                                         return 'Ingrese su nacionalidad';
                                       }
                                       return null;
@@ -768,8 +812,13 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                       );
                                     }).toList(),
                                     value: _ciudad,
-                                    validator: (dynamic value) =>
-                                        value == 0 ? 'Elija una ciudad' : null,
+                                    validator: (dynamic value) {
+                                      if (value == 0) {
+                                        _scrollTo(800);
+                                        return 'Elija una ciudad';
+                                      }
+                                      return null;
+                                    },
                                     onChanged: (dynamic value) {
                                       _ciudad = value;
                                     },
@@ -790,8 +839,13 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                     items: estadocivilItems,
                                     value: _estadoCivil,
                                     borderRadius: BorderRadius.circular(16),
-                                    validator: (dynamic value) =>
-                                        value == "NN" ? 'NN' : null,
+                                    validator: (dynamic value) {
+                                      if (value == "NN") {
+                                        _scrollTo(1000);
+                                        return 'Elija estado civil';
+                                      }
+                                      return null;
+                                    },
                                     onChanged: (dynamic value) {
                                       _estadoCivil = value;
                                     },
@@ -814,10 +868,13 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                         )),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
-                                        _scrollController.animateTo(0.0,
-                                            duration: const Duration(
-                                                milliseconds: 600),
-                                            curve: Curves.linear);
+                                        _scrollController.animateTo(
+                                          1000.0,
+                                          duration: const Duration(
+                                            milliseconds: 600,
+                                          ),
+                                          curve: Curves.linear,
+                                        );
                                         return 'Ingrese número de celular';
                                       }
                                       return null;

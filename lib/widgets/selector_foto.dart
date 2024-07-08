@@ -35,16 +35,22 @@ class SelectorFoto extends StatelessWidget {
                   height: 340,
                   width: 280,
                   decoration: BoxDecoration(
-                    color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
                       color: const Color(0xffEC1C24),
                     ),
                   ),
                   child: imagen == null
-                      ? reversePlaceholder
-                          ? Image.asset(placeHolderAsset)
-                          : Image.asset(placeHolderAsset)
+                      ? Center(
+                          child: reversePlaceholder
+                              ? Image.asset(placeHolderAsset)
+                              : Image.asset(
+                                  placeHolderAsset,
+                                  width: placeHolderAsset.contains('trasera')
+                                      ? 160
+                                      : null,
+                                ),
+                        )
                       : Image.file(imagen!),
                 ),
                 Positioned(

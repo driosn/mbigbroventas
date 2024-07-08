@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -413,274 +412,233 @@ class _SummaryScreenState extends State<SummaryScreen> {
                         ],
                       ),
                       const SizedBox(height: 20),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                final bigBroService = BigBroService();
-
-                                final slipResponse =
-                                    await bigBroService.getSlip(
-                                  userId: widget.personalDataController.userId,
-                                  carId: widget.carController.carId,
-                                  stockId: widget.paqueteStock.idstock,
-                                  startDate: DateTime.now().dashedDate,
-                                  endDate: DateTime.now()
-                                      .add(Duration(
-                                          days: widget.paqueteStock.duration))
-                                      .dashedDate,
-                                  prima: widget.paqueteStock.primebs.toDouble(),
-                                );
-
-                                nameFileSlip = slipResponse.nameFileSlip;
-
-                                String nameDocEncod =
-                                    base64Url.encode(utf8.encode(nameFileSlip));
-
-                                _launchNav(
-                                    'http://181.188.186.158:8000/document/$nameDocEncod');
-                              } catch (e) {
-                                Fluttertoast.showToast(
-                                    msg: 'Hubo un problema generando el slip');
-                              }
-                            },
-                            child: const Row(
-                              children: [
-                                Icon(
-                                  Icons.file_download,
-                                  size: 20.0,
-                                  color: Colors.white,
-                                ),
-                                SizedBox(
-                                  width: 10,
-                                ),
-                                SizedBox(
-                                  width: 190,
-                                  child: Text(
-                                    "Descargar slip de cotización",
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontSize: 12.0),
-                                  ),
-                                )
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 20),
+                      // Row(
+                      //   mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      //   children: [
+                      //     ElevatedButton(
+                      //       onPressed: () async {},
+                      //       child: const Row(
+                      //         children: [
+                      //           Icon(
+                      //             Icons.file_download,
+                      //             size: 20.0,
+                      //             color: Colors.white,
+                      //           ),
+                      //           SizedBox(
+                      //             width: 10,
+                      //           ),
+                      //           SizedBox(
+                      //             width: 190,
+                      //             child: Text(
+                      //               "Descargar slip de cotización",
+                      //               textAlign: TextAlign.center,
+                      //               style: TextStyle(fontSize: 12.0),
+                      //             ),
+                      //           )
+                      //         ],
+                      //       ),
+                      //     )
+                      //   ],
+                      // ),
+                      // const SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () async {
-                          if (nameFileSlip.isEmpty) {
-                            _showMyDialogNoSlip();
-                          } else {
-                            showDialog(
-                              context: context,
-                              builder: (context) {
-                                return CustomDialog(
-                                  context: context,
-                                  iconColor: Theme.of(context).primaryColor,
-                                  hideActions: false,
-                                  icon: SizedBox(
-                                    height: 42,
-                                    width: 42,
-                                    child: Image.asset(
-                                      'assets/img/logo_bigbro.png',
-                                    ),
+                          showDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            builder: (context) {
+                              return CustomDialog(
+                                context: context,
+                                iconColor: Theme.of(context).primaryColor,
+                                hideActions: false,
+                                icon: SizedBox(
+                                  height: 42,
+                                  width: 42,
+                                  child: Image.asset(
+                                    'assets/img/logo_bigbro.png',
                                   ),
-                                  extraActions: [
-                                    GestureDetector(
-                                      onTap: () async {
-                                        // TODO: Mostrar dialog progreso
+                                ),
+                                extraActions: [
+                                  GestureDetector(
+                                    onTap: () async {
+                                      try {
+                                        final bigBroService = BigBroService();
 
-                                        try {
-                                          final bigBroService = BigBroService();
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return const Center(
+                                              child:
+                                                  CircularProgressIndicator(),
+                                            );
+                                          },
+                                        );
 
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return const Dialog(
-                                                backgroundColor:
-                                                    Colors.transparent,
-                                                child: Center(
-                                                  child:
-                                                      CircularProgressIndicator(),
-                                                ),
-                                              );
-                                            },
-                                          );
+                                        final policyResponse =
+                                            await bigBroService.createPolicy(
+                                          startDate: DateTime.now().dashedDate,
+                                          endDate: DateTime.now()
+                                              .add(Duration(
+                                                  days: widget
+                                                      .paqueteStock.duration))
+                                              .dashedDate,
+                                          daysNumber:
+                                              widget.paqueteStock.duration,
+                                          coberturas: "1,2,3,4,5,6,7,8,9",
+                                          userId: widget
+                                              .personalDataController.userId,
+                                          carId: widget.carController.carId,
+                                          inspectionId: widget
+                                              .inspectionController
+                                              .inspectionId,
+                                          companyId: 1,
+                                          urlSlip: nameFileSlip,
+                                          renovationNumber: 0,
+                                        );
 
-                                          final policyResponse =
-                                              await bigBroService.createPolicy(
-                                            startDate:
-                                                DateTime.now().dashedDate,
-                                            endDate: DateTime.now()
-                                                .add(Duration(
-                                                    days: widget
-                                                        .paqueteStock.duration))
-                                                .dashedDate,
-                                            daysNumber:
-                                                widget.paqueteStock.duration,
-                                            coberturas: "1,2,3,4,5,6,7,8,9",
-                                            userId: widget
-                                                .personalDataController.userId,
-                                            carId: widget.carController.carId,
-                                            inspectionId: widget
-                                                .inspectionController
-                                                .inspectionId,
-                                            companyId: 1,
-                                            urlSlip: nameFileSlip,
-                                            renovationNumber: 0,
-                                          );
+                                        // ignore: use_build_context_synchronously
+                                        Navigator.pop(context);
 
+                                        final policyId = policyResponse.id;
+
+                                        showDialog(
                                           // ignore: use_build_context_synchronously
-                                          Navigator.pop(context);
-
-                                          final policyId = policyResponse.id;
-
-                                          showDialog(
-                                            // ignore: use_build_context_synchronously
-                                            context: context,
-                                            barrierDismissible: false,
-                                            builder: (context) {
-                                              return CustomDialog(
-                                                context: context,
-                                                iconColor: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                                hideActions: true,
-                                                icon: const Icon(
-                                                  Icons.check,
-                                                  color: Colors.white,
-                                                  size: 50,
-                                                ),
-                                                content: Column(
-                                                  children: [
-                                                    const Text(
-                                                      'El seguro ha sido aprobado',
-                                                      style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 18,
-                                                      ),
-                                                      textAlign:
-                                                          TextAlign.center,
+                                          context: context,
+                                          barrierDismissible: false,
+                                          builder: (context) {
+                                            return CustomDialog(
+                                              context: context,
+                                              iconColor: Theme.of(context)
+                                                  .colorScheme
+                                                  .secondary,
+                                              hideActions: true,
+                                              icon: const Icon(
+                                                Icons.check,
+                                                color: Colors.white,
+                                                size: 50,
+                                              ),
+                                              content: Column(
+                                                children: [
+                                                  const Text(
+                                                    'El seguro ha sido aprobado',
+                                                    style: TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      fontSize: 18,
                                                     ),
-                                                    const SizedBox(
-                                                      height: 8,
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 8,
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  const Text(
+                                                    '¡Gracias por elegir miBigbro!',
+                                                    textAlign: TextAlign.center,
+                                                    style: TextStyle(
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold,
                                                     ),
-                                                    const SizedBox(
-                                                      height: 16,
-                                                    ),
-                                                    const Text(
-                                                      '¡Gracias por elegir miBigbro!',
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                      ),
-                                                    ),
-                                                    const SizedBox(
-                                                      height: 16,
-                                                    ),
-                                                    ElevatedButton(
-                                                      child: const Text(
-                                                          'Finalizar'),
-                                                      onPressed: () {
-                                                        showQRDialog(
-                                                          context,
-                                                          insuranceId: policyId,
-                                                          amount: widget
-                                                              .paqueteStock
-                                                              .primebs,
-                                                          onFinish: () {
-                                                            Navigator.pop(
-                                                                context);
-                                                            Navigator
-                                                                .pushAndRemoveUntil(
-                                                              context,
-                                                              MaterialPageRoute(
-                                                                builder: (_) =>
-                                                                    const HomeScreen(),
-                                                              ),
-                                                              (route) => false,
-                                                            );
-                                                          },
-                                                        );
-                                                        // Navigator.push(
-                                                        // context,
-                                                        // MaterialPageRoute(
-                                                        // builder: (context) =>
-                                                        // Calificacion(
-                                                        // datosMotorizado:
-                                                        // widget
-                                                        // .datosMotorizado),
-                                                        // ),
-                                                        // );
-                                                      },
-                                                    )
-                                                  ],
-                                                ),
-                                                extraActions: const [],
-                                              );
-                                            },
-                                          );
-                                        } catch (exception) {
-                                          Navigator.pop(context);
-                                          Fluttertoast.showToast(
-                                            msg:
-                                                'Hubo un problema generando la poliza, intentelo nuevamente',
-                                          );
-                                        }
-                                      },
-                                      child: const Text(
-                                        'Aceptar',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                                  ),
+                                                  const SizedBox(
+                                                    height: 16,
+                                                  ),
+                                                  ElevatedButton(
+                                                    child:
+                                                        const Text('Finalizar'),
+                                                    onPressed: () {
+                                                      showQRDialog(
+                                                        context,
+                                                        insuranceId: policyId,
+                                                        amount: widget
+                                                            .paqueteStock
+                                                            .primebs,
+                                                        onFinish: () {
+                                                          Navigator.pop(
+                                                              context);
+                                                          Navigator
+                                                              .pushAndRemoveUntil(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                              builder: (_) =>
+                                                                  const HomeScreen(),
+                                                            ),
+                                                            (route) => false,
+                                                          );
+                                                        },
+                                                      );
+                                                      // Navigator.push(
+                                                      // context,
+                                                      // MaterialPageRoute(
+                                                      // builder: (context) =>
+                                                      // Calificacion(
+                                                      // datosMotorizado:
+                                                      // widget
+                                                      // .datosMotorizado),
+                                                      // ),
+                                                      // );
+                                                    },
+                                                  )
+                                                ],
+                                              ),
+                                              extraActions: const [],
+                                            );
+                                          },
+                                        );
+                                      } catch (exception) {
+                                        Navigator.pop(context);
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Hubo un problema generando la poliza, intentelo nuevamente',
+                                        );
+                                      }
+                                    },
+                                    child: const Text(
+                                      'Aceptar',
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                  ],
-                                  content: const Column(
-                                    children: [
-                                      SizedBox(
-                                        height: 10,
-                                      ),
-                                      Text(
-                                        'miBigBro',
-                                        style: TextStyle(
-                                          color: Color(0xff1A2461),
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      SizedBox(
-                                        height: 8,
-                                      ),
-                                      Text(
-                                        'Estas de acuerdo con los datos del seguro?',
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      SizedBox(
-                                        height: 12,
-                                      ),
-                                      Text(
-                                        'Favor valide toda la información, en caso de contar con un error en los datos, la póliza será rechazada',
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      SizedBox(
-                                        height: 12,
-                                      )
-                                    ],
                                   ),
-                                );
-                              },
-                            );
-                          }
-
+                                ],
+                                content: const Column(
+                                  children: [
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'miBigBro',
+                                      style: TextStyle(
+                                        color: Color(0xff1A2461),
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 8,
+                                    ),
+                                    Text(
+                                      'Estas de acuerdo con los datos del seguro?',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      'Favor valide toda la información, en caso de contar con un error en los datos, la póliza será rechazada',
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    SizedBox(
+                                      height: 12,
+                                    )
+                                  ],
+                                ),
+                              );
+                            },
+                          );
                           // Navigator.pushAndRemoveUntil(
                           // context,
                           // MaterialPageRoute(builder: (_) => HomeScreen()),

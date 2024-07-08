@@ -133,53 +133,59 @@ class _MotorizedPhotoLeftRightScreenState
                                 },
                                 imagen: imageLateralIzquierdo,
                                 onTapInfo: () {
-                                  CustomDialog(
+                                  showDialog(
                                     context: context,
-                                    iconColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: const Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                    content: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
+                                    builder: (_) {
+                                      return CustomDialog(
+                                        context: context,
+                                        iconColor: Theme.of(context)
+                                            .colorScheme
+                                            .secondary,
+                                        icon: const Icon(
+                                          Icons.camera_alt_outlined,
+                                          size: 40,
+                                          color: Colors.white,
                                         ),
-                                        Text(
-                                          'Tomar en cuenta para la foto',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        content: Column(
+                                          children: [
+                                            const SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              'Tomar en cuenta para la foto',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 12,
+                                            ),
+                                            Text(
+                                              'Foto lado Izquierdo',
+                                              style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            const SizedBox(
+                                              height: 20,
+                                            ),
+                                            const Text(
+                                                'La foto debe mostrar toda la parte lateral izquierda del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
+                                            const SizedBox(
+                                              height: 32,
+                                            )
+                                          ],
                                         ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          'Foto lado Izquierdo',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                            'La foto debe mostrar toda la parte lateral izquierda del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
-                                        const SizedBox(
-                                          height: 32,
-                                        )
-                                      ],
-                                    ),
-                                    extraActions: const [],
-                                    hideActions: false,
+                                        extraActions: const [],
+                                        hideActions: false,
+                                      );
+                                    },
                                   );
                                 },
                                 placeHolderAsset:
@@ -194,54 +200,59 @@ class _MotorizedPhotoLeftRightScreenState
                                 reversePlaceholder: true,
                                 imagen: imageLateralDerecho,
                                 onTapInfo: () {
-                                  CustomDialog(
-                                    context: context,
-                                    iconColor:
-                                        Theme.of(context).colorScheme.secondary,
-                                    icon: const Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 40,
-                                      color: Colors.white,
-                                    ),
-                                    content: Column(
-                                      children: [
-                                        const SizedBox(
-                                          height: 10,
-                                        ),
-                                        Text(
-                                          'Tomar en cuenta para la foto',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                  showDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        return CustomDialog(
+                                          context: context,
+                                          iconColor: Theme.of(context)
+                                              .colorScheme
+                                              .secondary,
+                                          icon: const Icon(
+                                            Icons.camera_alt_outlined,
+                                            size: 40,
+                                            color: Colors.white,
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          'Foto lado derecho',
-                                          style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
+                                          content: Column(
+                                            children: [
+                                              const SizedBox(
+                                                height: 10,
+                                              ),
+                                              Text(
+                                                'Tomar en cuenta para la foto',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 12,
+                                              ),
+                                              Text(
+                                                'Foto lado derecho',
+                                                style: TextStyle(
+                                                  color: Theme.of(context)
+                                                      .primaryColor,
+                                                  fontSize: 18,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                height: 20,
+                                              ),
+                                              const Text(
+                                                  'La foto debe mostrar toda la parte lateral derecha del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
+                                              const SizedBox(
+                                                height: 32,
+                                              )
+                                            ],
                                           ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        const Text(
-                                            'La foto debe mostrar toda la parte lateral derecha del vehículo. Se debe ver con claridad los aros de las llantas y los retrovisores'),
-                                        const SizedBox(
-                                          height: 32,
-                                        )
-                                      ],
-                                    ),
-                                    extraActions: const [],
-                                    hideActions: false,
-                                  );
+                                          extraActions: const [],
+                                          hideActions: false,
+                                        );
+                                      });
                                 },
                                 placeHolderAsset:
                                     'assets/img/automovil_lateral_der.png',
