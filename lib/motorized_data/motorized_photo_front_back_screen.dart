@@ -352,10 +352,31 @@ class _MotorizedPhotoFrontBackScreenState
                                         );
                                       }
                                     } else {
-                                      Fluttertoast.showToast(
-                                        msg:
-                                            'Debe subir las fotos frontal y trasera',
-                                      );
+                                      if (imageFrontal == null) {
+                                        _pageController.animateToPage(
+                                          0,
+                                          duration:
+                                              const Duration(milliseconds: 800),
+                                          curve: Curves.linear,
+                                        );
+                                        Fluttertoast.showToast(
+                                          msg: 'Imagen Frontal es requerida',
+                                        );
+                                        return;
+                                      }
+
+                                      if (imageTrasera == null) {
+                                        _pageController.animateToPage(
+                                          1,
+                                          duration:
+                                              const Duration(milliseconds: 800),
+                                          curve: Curves.linear,
+                                        );
+                                        Fluttertoast.showToast(
+                                          msg: 'Imagen Trasera es requerida',
+                                        );
+                                        return;
+                                      }
                                     }
                                   } else {
                                     _pageController.nextPage(

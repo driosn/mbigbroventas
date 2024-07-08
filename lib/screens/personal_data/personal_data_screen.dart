@@ -156,7 +156,7 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
   File? _imageUser;
   final TextEditingController _nombre = TextEditingController();
   final TextEditingController _apellidoPaterno = TextEditingController();
-  final TextEditingController _apellidoMaterno = TextEditingController();
+  // final TextEditingController _apellidoMaterno = TextEditingController();
   final TextEditingController _nacionalidad = TextEditingController();
   DateTime? _fechaNacimiento;
   final TextEditingController _celular = TextEditingController();
@@ -420,6 +420,11 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                             curve: Curves.linear);
                                         return 'Ingrese sus nombres';
                                       }
+
+                                      if (value.alphaIsOkWithSpaces() ==
+                                          false) {
+                                        return 'Nombres solo puede contener letras y espacios';
+                                      }
                                       return null;
                                     },
                                     inputFormatters: [
@@ -437,36 +442,18 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                         )),
                                     validator: (String? value) {
                                       if (value!.isEmpty) {
-                                        _scrollController.animateTo(0.0,
-                                            duration: const Duration(
-                                                milliseconds: 600),
-                                            curve: Curves.linear);
-                                        return 'Ingrese su apellido paterno';
-                                      }
-                                      return null;
-                                    },
-                                    inputFormatters: [
-                                      UpperCaseTextFormatter(),
-                                    ],
-                                  ),
-                                  TextFormField(
-                                    controller: _apellidoMaterno,
-                                    decoration: const InputDecoration(
-                                        labelText: 'Apellido materno',
-                                        enabledBorder: UnderlineInputBorder(
-                                          borderSide: BorderSide(
-                                            color: Color(0xff1D2766),
-                                          ),
-                                        )),
-                                    validator: (String? value) {
-                                      if (value!.isEmpty) {
                                         _scrollController.animateTo(
                                           0.0,
                                           duration:
                                               const Duration(milliseconds: 600),
                                           curve: Curves.linear,
                                         );
-                                        return 'Ingrese su apellido materno';
+                                        return 'Ingrese su apellido paterno';
+                                      }
+
+                                      if (value.alphaIsOkWithSpaces() ==
+                                          false) {
+                                        return 'Apellido paterno solo puede contener letras y espacios';
                                       }
                                       return null;
                                     },
@@ -474,6 +461,31 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                       UpperCaseTextFormatter(),
                                     ],
                                   ),
+                                  // TextFormField(
+                                  //   controller: _apellidoMaterno,
+                                  //   decoration: const InputDecoration(
+                                  //       labelText: 'Apellido materno',
+                                  //       enabledBorder: UnderlineInputBorder(
+                                  //         borderSide: BorderSide(
+                                  //           color: Color(0xff1D2766),
+                                  //         ),
+                                  //       )),
+                                  //   validator: (String? value) {
+                                  //     if (value!.isEmpty) {
+                                  //       _scrollController.animateTo(
+                                  //         0.0,
+                                  //         duration:
+                                  //             const Duration(milliseconds: 600),
+                                  //         curve: Curves.linear,
+                                  //       );
+                                  //       return 'Ingrese su apellido materno';
+                                  //     }
+                                  //     return null;
+                                  //   },
+                                  //   inputFormatters: [
+                                  //     UpperCaseTextFormatter(),
+                                  //   ],
+                                  // ),
                                   TextFormField(
                                     inputFormatters: [
                                       FilteringTextInputFormatter.deny(''),
@@ -951,10 +963,10 @@ class _PersonalDataFormScreen extends State<PersonalDataFormScreen> {
                                             final clientResponse =
                                                 await personalDataController
                                                     .createClient(
-                                              name: _nombre.text,
-                                              lastName: _apellidoPaterno.text,
-                                              motherLastName:
-                                                  _apellidoMaterno.text,
+                                              name: _nombre.text.trim(),
+                                              lastName:
+                                                  _apellidoPaterno.text.trim(),
+                                              motherLastName: '',
                                               cellPhone: _celular.text,
                                               birthdate: (_fechaNacimiento ??
                                                       DateTime.now())

@@ -371,10 +371,19 @@ class _MotorizedPhotoExtraScreenState extends State<MotorizedPhotoExtraScreen> {
                                           );
                                         }
                                       } else {
-                                        Fluttertoast.showToast(
-                                          msg:
-                                              'Debe subir las fotos adicionales',
-                                        );
+                                        if (imageTablero == null) {
+                                          _pageController.animateToPage(
+                                            0,
+                                            duration: const Duration(
+                                                milliseconds: 800),
+                                            curve: Curves.linear,
+                                          );
+                                          Fluttertoast.showToast(
+                                            msg:
+                                                'Debe subir la imagen del tablero',
+                                          );
+                                          return;
+                                        }
                                       }
                                     } else {
                                       _pageController.nextPage(

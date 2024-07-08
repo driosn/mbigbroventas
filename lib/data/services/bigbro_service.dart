@@ -109,6 +109,7 @@ class BigBroService {
       }
       throw Exception('Error inesperado');
     } catch (e) {
+      print(e);
       rethrow;
     }
   }

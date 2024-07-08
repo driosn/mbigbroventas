@@ -109,14 +109,23 @@ class CarDataScreenState extends State<CarDataScreen> {
                 builder: (context, child) {
                   if (_carController.getExtraDataStatus ==
                       BigBroStatus.loading) {
-                    const Center(
-                      child: CircularProgressIndicator(),
+                    return const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text('Cargando formulario')
+                        ],
+                      ),
                     );
                   }
 
                   if (_carController.getExtraDataStatus ==
                       BigBroStatus.failure) {
-                    const Center(
+                    return const Center(
                       child: Text('Hubo un problema al cargar las marcas'),
                     );
                   }

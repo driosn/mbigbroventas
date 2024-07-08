@@ -274,10 +274,33 @@ class _PersonalDataCIScreen extends State<PersonalDataCIScreen> {
                                                   );
                                                 }
                                               } else {
-                                                Fluttertoast.showToast(
-                                                  msg:
-                                                      'Imagen Frontal y Trasera son requeridas',
-                                                );
+                                                if (_imageCiFrontal == null) {
+                                                  _pageController.animateToPage(
+                                                    0,
+                                                    duration: const Duration(
+                                                        milliseconds: 800),
+                                                    curve: Curves.linear,
+                                                  );
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Imagen Frontal es requerida',
+                                                  );
+                                                  return;
+                                                }
+
+                                                if (_imageCiTrasera == null) {
+                                                  _pageController.animateToPage(
+                                                    1,
+                                                    duration: const Duration(
+                                                        milliseconds: 800),
+                                                    curve: Curves.linear,
+                                                  );
+                                                  Fluttertoast.showToast(
+                                                    msg:
+                                                        'Imagen Trasera es requerida',
+                                                  );
+                                                  return;
+                                                }
                                               }
                                             } else {
                                               if (ciFrontaCargado != null &&

@@ -11,3 +11,15 @@ extension DateTimeX on DateTime {
     return "${year.toString().padLeft(4, '0')}-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}";
   }
 }
+
+extension Validations on String {
+  bool alphaIsOk() {
+    final validCharacters = RegExp(r'^[a-zA-Z]+$');
+    return validCharacters.hasMatch(this);
+  }
+
+  bool alphaIsOkWithSpaces() {
+    final validCharacters = RegExp(r'^[a-zA-Z ]+$');
+    return validCharacters.hasMatch(this);
+  }
+}

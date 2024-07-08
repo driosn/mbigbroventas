@@ -5,11 +5,12 @@ import 'package:mibigbro_ventas_mobile/controllers/personal_data_controller.dart
 import 'package:mibigbro_ventas_mobile/data/models/paquetes/paquete_stock.dart';
 import 'package:mibigbro_ventas_mobile/dialogs/custom_info_dialog.dart';
 import 'package:mibigbro_ventas_mobile/motorized_data/motorized_data_crpva_screen.dart';
+import 'package:mibigbro_ventas_mobile/motorized_data/motorized_photo_front_back_screen.dart';
 import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 
 // Create a Form widget.
 class PlanConfirmationScreen extends StatefulWidget {
-  final bool esRenovacion;
+  final bool esRenovacion24Hrs;
 
   final DateTime fechaFin;
   final PaqueteStock paqueteStock;
@@ -18,7 +19,7 @@ class PlanConfirmationScreen extends StatefulWidget {
 
   const PlanConfirmationScreen({
     super.key,
-    this.esRenovacion = false,
+    this.esRenovacion24Hrs = false,
     required this.fechaFin,
     required this.paqueteStock,
     required this.personalDataController,
@@ -375,6 +376,22 @@ class PlanConfirmationScreenState extends State<PlanConfirmationScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () {
+                              if (widget.esRenovacion24Hrs) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) =>
+                                        MotorizedPhotoFrontBackScreen(
+                                      carController: widget.carController,
+                                      paqueteStock: widget.paqueteStock,
+                                      personalDataController:
+                                          widget.personalDataController,
+                                    ),
+                                  ),
+                                );
+                                return;
+                              }
+
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(

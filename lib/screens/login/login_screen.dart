@@ -45,10 +45,10 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _pass.text;
 
     final successResponse = await loginControllerInstance.login(
-      // email: 'davidsamuelrios07@gmail.com',
-      email: email,
-      // password: 'Abrenet123*',
-      password: password,
+      email: 'davidsamuelrios07@gmail.com',
+      // email: email,
+      password: 'Abrenet123*',
+      // password: password,
     );
 
     if (successResponse) {
@@ -56,15 +56,15 @@ class _LoginScreenState extends State<LoginScreen> {
       gEmail = email;
 
       if (mounted) {
-        // storageHelper.saveUsernameAndPassword(
-        // 'davidsamuelrios07@gmail.com',
-        // 'Abrenet123*',
-        // );
-
         storageHelper.saveUsernameAndPassword(
-          email,
-          password,
+          'davidsamuelrios07@gmail.com',
+          'Abrenet123*',
         );
+
+        // storageHelper.saveUsernameAndPassword(
+        // email,
+        // password,
+        // );
 
         Navigator.push(
           context,

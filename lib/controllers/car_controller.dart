@@ -48,7 +48,7 @@ class CarController extends ChangeNotifier {
   int issueValue = 0;
   int userId = 0;
   int uso = 0;
-  int clase = 0;
+  int clase = 1;
   int ciudad = 0;
   int modelo = 0;
   int marca = 0;

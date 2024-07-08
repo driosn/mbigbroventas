@@ -10,12 +10,12 @@ import 'package:mibigbro_ventas_mobile/widgets/bigbro_scaffold.dart';
 class PlansScreen extends StatelessWidget {
   const PlansScreen({
     super.key,
-    this.esRenovacion = false,
+    this.esRenovacion24Hrs = false,
     required this.carController,
     required this.personalDataController,
   });
 
-  final bool esRenovacion;
+  final bool esRenovacion24Hrs;
 
   final CarController carController;
   final PersonalDataController personalDataController;
@@ -37,7 +37,7 @@ class PlansScreen extends StatelessWidget {
         ],
       ),
       body: Paquetes(
-        esRenovacion: esRenovacion,
+        esRenovacion24Hrs: esRenovacion24Hrs,
         carController: carController,
         personalDataController: personalDataController,
       ),
@@ -46,13 +46,13 @@ class PlansScreen extends StatelessWidget {
 }
 
 class Paquetes extends StatefulWidget {
-  final bool esRenovacion;
+  final bool esRenovacion24Hrs;
   final CarController carController;
   final PersonalDataController personalDataController;
 
   const Paquetes({
     super.key,
-    this.esRenovacion = false,
+    this.esRenovacion24Hrs = false,
     required this.carController,
     required this.personalDataController,
   });
@@ -190,6 +190,7 @@ class _PaquetesState extends State<Paquetes> {
                                 carController: widget.carController,
                                 personalDataController:
                                     widget.personalDataController,
+                                esRenovacion24Hrs: widget.esRenovacion24Hrs,
                               ),
                             ),
                           );

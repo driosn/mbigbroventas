@@ -187,6 +187,7 @@ class _SearchClientRenovationScreenState
                       context,
                       MaterialPageRoute(
                         builder: (context) => PlansScreen(
+                          esRenovacion24Hrs: estado == "vencida_1_dia",
                           carController: carController,
                           personalDataController: personalDataController,
                         ),
@@ -238,122 +239,124 @@ class _SearchClientRenovationScreenState
               height: 16,
             ),
             Expanded(
-              child: ValueListenableBuilder<bool>(
-                valueListenable: _isLoadingNotifier,
-                builder: (context, isLoading, child) {
-                  if (isLoading) {
-                    return Center(
-                      child: Container(
-                        margin: const EdgeInsets.only(top: 32),
-                        child: const CircularProgressIndicator(),
-                      ),
+              child: SingleChildScrollView(
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: _isLoadingNotifier,
+                  builder: (context, isLoading, child) {
+                    if (isLoading) {
+                      return Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 32),
+                          child: const CircularProgressIndicator(),
+                        ),
+                      );
+                    }
+
+                    return ValueListenableBuilder<List<Poliza>?>(
+                      valueListenable: polizasNotifier,
+                      builder: (context, polizas, child) {
+                        if (polizas == null) {
+                          return const SizedBox();
+                        }
+
+                        if (polizas.isEmpty) {
+                          return const Center(
+                            child: Text(
+                              'El usuario buscado no tiene polizas vencidas',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: AppColors.primary,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          );
+                        }
+
+                        return Column(
+                            children: polizas.map((poliza) {
+                          return Container(
+                            padding: const EdgeInsets.all(24),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: AppColors.secondary,
+                              ),
+                            ),
+                            child: Column(
+                              children: [
+                                _infoTile(
+                                  title: 'ID Poliza:',
+                                  value: poliza.idPoliza.toString(),
+                                ),
+                                _infoTile(
+                                  title: 'Aseguradora:',
+                                  value: poliza.aseguradora,
+                                ),
+                                _infoTile(
+                                  title: 'Modelo:',
+                                  value: poliza.modelo,
+                                ),
+                                _infoTile(
+                                  title: 'Marca:',
+                                  value: poliza.placa,
+                                ),
+                                _infoTile(
+                                  title: 'Placa:',
+                                  value: poliza.placa,
+                                ),
+                                _infoTile(
+                                  title: 'Uso:',
+                                  value: poliza.uso,
+                                ),
+                                _infoTile(
+                                  title: 'Vigencia Inicio:',
+                                  value: poliza.vigenciaInicio.slashedDate,
+                                ),
+                                _infoTile(
+                                  title: 'Vigencia Fin:',
+                                  value: poliza.vigenciaFinal.slashedDate,
+                                ),
+                                const SizedBox(
+                                  height: 24,
+                                ),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    _actualizarValor(
+                                      poliza,
+                                      poliza.idAutomovil,
+                                      clientNotifier.value!.usuarioId,
+                                      poliza.valorAsegurado,
+                                      poliza.idMarca,
+                                      poliza.idModelo,
+                                      poliza.idYear,
+                                      poliza.idUso,
+                                      poliza.idCiudad,
+                                      poliza.idInspeccion,
+                                      poliza.nroRenovacion,
+                                      poliza.estado,
+                                      poliza.vigenciaFinal,
+                                    );
+                                    // Navigator.push(
+                                    // context,
+                                    // MaterialPageRoute(
+                                    // builder: (context) {
+                                    // return PersonalDataFoundClientScreen(
+                                    // client: searchedClient,
+                                    // );
+                                    // },
+                                    // ),
+                                    // );
+                                  },
+                                  child: const Text('Continuar'),
+                                )
+                              ],
+                            ),
+                          );
+                        }).toList());
+                      },
                     );
-                  }
-
-                  return ValueListenableBuilder<List<Poliza>?>(
-                    valueListenable: polizasNotifier,
-                    builder: (context, polizas, child) {
-                      if (polizas == null) {
-                        return const SizedBox();
-                      }
-
-                      if (polizas.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'El usuario buscado no tiene polizas vencidas',
-                            style: TextStyle(
-                              fontSize: 20,
-                              color: AppColors.primary,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        );
-                      }
-
-                      return Column(
-                          children: polizas.map((poliza) {
-                        return Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(
-                              color: AppColors.secondary,
-                            ),
-                          ),
-                          child: Column(
-                            children: [
-                              _infoTile(
-                                title: 'ID Poliza:',
-                                value: poliza.idPoliza.toString(),
-                              ),
-                              _infoTile(
-                                title: 'Aseguradora:',
-                                value: poliza.aseguradora,
-                              ),
-                              _infoTile(
-                                title: 'Modelo:',
-                                value: poliza.modelo,
-                              ),
-                              _infoTile(
-                                title: 'Marca:',
-                                value: poliza.placa,
-                              ),
-                              _infoTile(
-                                title: 'Placa:',
-                                value: poliza.placa,
-                              ),
-                              _infoTile(
-                                title: 'Uso:',
-                                value: poliza.uso,
-                              ),
-                              _infoTile(
-                                title: 'Vigencia Inicio:',
-                                value: poliza.vigenciaInicio.slashedDate,
-                              ),
-                              _infoTile(
-                                title: 'Vigencia Fin:',
-                                value: poliza.vigenciaFinal.slashedDate,
-                              ),
-                              const SizedBox(
-                                height: 24,
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  _actualizarValor(
-                                    poliza,
-                                    poliza.idAutomovil,
-                                    clientNotifier.value!.usuarioId,
-                                    poliza.valorAsegurado,
-                                    poliza.idMarca,
-                                    poliza.idModelo,
-                                    poliza.idYear,
-                                    poliza.idUso,
-                                    poliza.idCiudad,
-                                    poliza.idInspeccion,
-                                    poliza.nroRenovacion,
-                                    poliza.estado,
-                                    poliza.vigenciaFinal,
-                                  );
-                                  // Navigator.push(
-                                  // context,
-                                  // MaterialPageRoute(
-                                  // builder: (context) {
-                                  // return PersonalDataFoundClientScreen(
-                                  // client: searchedClient,
-                                  // );
-                                  // },
-                                  // ),
-                                  // );
-                                },
-                                child: const Text('Continuar'),
-                              )
-                            ],
-                          ),
-                        );
-                      }).toList());
-                    },
-                  );
-                },
+                  },
+                ),
               ),
             ),
           ],

@@ -347,9 +347,33 @@ class _MotorizedPhotoLeftRightScreenState
                                         );
                                       }
                                     } else {
-                                      Fluttertoast.showToast(
-                                        msg: 'Debe subir las fotos laterales',
-                                      );
+                                      if (imageLateralIzquierdo == null) {
+                                        _pageController.animateToPage(
+                                          0,
+                                          duration:
+                                              const Duration(milliseconds: 800),
+                                          curve: Curves.linear,
+                                        );
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Imagen lateral izquierda es requerida',
+                                        );
+                                        return;
+                                      }
+
+                                      if (imageLateralIzquierdo == null) {
+                                        _pageController.animateToPage(
+                                          1,
+                                          duration:
+                                              const Duration(milliseconds: 800),
+                                          curve: Curves.linear,
+                                        );
+                                        Fluttertoast.showToast(
+                                          msg:
+                                              'Imagen lateral derecha es requerida',
+                                        );
+                                        return;
+                                      }
                                     }
                                   } else {
                                     _pageController.nextPage(
